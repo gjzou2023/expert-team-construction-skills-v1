@@ -1,0 +1,543 @@
+{
+  "name": "全域专家团构建skills",
+  "version": "1.5.0",
+  "date": "2026-06-17",
+  "description": "全域专家团构建skills统一套系：支持根据用户需求动态构建任意领域专家团，用户只需触发team-orchestrator一次，系统自动完成S1→S8全流程，子skill对用户完全透明。",
+  "author": "全域专家团架构师",
+  "skills_count": 40,
+  "layers": {
+    "L-Meta": {
+      "name": "元编排层",
+      "count": 1
+    },
+    "L0": {
+      "name": "核心引擎层",
+      "count": 6
+    },
+    "L1": {
+      "name": "流程层",
+      "count": 8
+    },
+    "L2": {
+      "name": "协议层",
+      "count": 11
+    },
+    "L3": {
+      "name": "平台适配层",
+      "count": 9
+    },
+    "L4": {
+      "name": "全局约束层",
+      "count": 5
+    }
+  },
+  "skills": [
+    {
+      "id": "team-orchestrator",
+      "layer": "L-Meta",
+      "name_zh": "全域专家团总编排器",
+      "name_en": "Team Orchestrator",
+      "version": "1.0.0",
+      "description": "全域专家团构建skills系统统一入口编排器。用户只需触发此skill一次，系统自动按S1→S8顺序执行全流程，L0/L2/L3/L4层skill按需自动激活，用户无需感知底层子skill的存在。",
+      "dependencies": [
+        "pipeline-s1-need-diving",
+        "pipeline-s2-domain-disambiguation",
+        "pipeline-s3-chain-decomposition",
+        "pipeline-s4-deliverable-anchoring",
+        "pipeline-s5-architecture-design",
+        "pipeline-s6-toolchain-matching",
+        "pipeline-s7-expert-package-generation",
+        "pipeline-s8-platform-execution"
+      ],
+      "entry_point": true,
+      "auto_chain": true,
+      "sub_skills_hidden_from_user": true
+    },
+    {
+      "id": "core-complexity-channel-selector",
+      "layer": "L0",
+      "name_zh": "复杂度通道选择器",
+      "name_en": "Complexity Channel Selector",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "core-deliverable-backward-engine",
+      "layer": "L0",
+      "name_zh": "交付物倒推引擎",
+      "name_en": "Deliverable Backward Engine",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "core-domain-classifier",
+      "layer": "L0",
+      "name_zh": "领域分类器",
+      "name_en": "Domain Classifier",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "core-mental-model-engine",
+      "layer": "L0",
+      "name_zh": "思维框架引擎",
+      "name_en": "Mental Model Engine",
+      "version": "1.4.0",
+      "dependencies": []
+    },
+    {
+      "id": "core-state-management-engine",
+      "layer": "L0",
+      "name_zh": "状态管理引擎",
+      "name_en": "State Management Engine",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "core-symbol-system",
+      "layer": "L0",
+      "name_zh": "符号系统",
+      "name_en": "Symbol System",
+      "version": "1.1.0",
+      "dependencies": []
+    },
+    {
+      "id": "pipeline-s1-need-diving",
+      "layer": "L1",
+      "name_zh": "阶段一：需求深潜",
+      "name_en": "Stage 1: Need Diving",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-complexity-channel-selector",
+        "protocol-single-question-guidance"
+      ]
+    },
+    {
+      "id": "pipeline-s2-domain-disambiguation",
+      "layer": "L1",
+      "name_zh": "阶段二：领域分类与消歧",
+      "name_en": "Stage 2: Domain Disambiguation",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-domain-classifier",
+        "protocol-confirmation-node"
+      ]
+    },
+    {
+      "id": "pipeline-s3-chain-decomposition",
+      "layer": "L1",
+      "name_zh": "阶段三：链路拆解",
+      "name_en": "Stage 3: Chain Decomposition",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ]
+    },
+    {
+      "id": "pipeline-s4-deliverable-anchoring",
+      "layer": "L1",
+      "name_zh": "阶段四：交付物锚定",
+      "name_en": "Stage 4: Deliverable Anchoring",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ]
+    },
+    {
+      "id": "pipeline-s5-architecture-design",
+      "layer": "L1",
+      "name_zh": "阶段五：架构设计",
+      "name_en": "Stage 5: Architecture Design",
+      "version": "1.3.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine",
+        "protocol-quality-gate",
+        "protocol-feedback-loop",
+        "protocol-compliance-engine"
+      ]
+    },
+    {
+      "id": "pipeline-s6-toolchain-matching",
+      "layer": "L1",
+      "name_zh": "阶段六：工具链匹配",
+      "name_en": "Stage 6: Toolchain Matching",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "pipeline-s7-expert-package-generation",
+      "layer": "L1",
+      "name_zh": "阶段七：专家包生成",
+      "name_en": "Stage 7: Expert Package Generation",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ],
+      "conditional_activation": {
+        "L2_protocols": "按activation_context.domain_type和compliance_requirements条件激活",
+        "L3_adapter": "仅激活platform对应的单个L3适配器"
+      }
+    },
+    {
+      "id": "pipeline-s8-platform-execution",
+      "layer": "L1",
+      "name_zh": "阶段八：平台执行",
+      "name_en": "Stage 8: Platform Execution",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-automation-trigger",
+      "layer": "L2",
+      "name_zh": "自动化触发设计",
+      "name_en": "Automation Trigger Design",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-compliance-engine",
+      "layer": "L2",
+      "name_zh": "合规协议引擎",
+      "name_en": "Compliance Engine",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-confirmation-node",
+      "layer": "L2",
+      "name_zh": "确认节点管理协议",
+      "name_en": "Confirmation Node Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-state-management-engine"
+      ]
+    },
+    {
+      "id": "protocol-data-security",
+      "layer": "L2",
+      "name_zh": "数据安全协议",
+      "name_en": "Data Security Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-error-handling",
+      "layer": "L2",
+      "name_zh": "异常处理与降级协议",
+      "name_en": "Error Handling Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-state-management-engine"
+      ]
+    },
+    {
+      "id": "protocol-feedback-loop",
+      "layer": "L2",
+      "name_zh": "反馈闭环协议",
+      "name_en": "Feedback Loop Protocol",
+      "version": "1.3.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-human-approval",
+      "layer": "L2",
+      "name_zh": "人机协作审批协议",
+      "name_en": "Human Approval Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-knowledge-persistence",
+      "layer": "L2",
+      "name_zh": "知识资产沉淀协议",
+      "name_en": "Knowledge Persistence Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-quality-gate",
+      "layer": "L2",
+      "name_zh": "质量守门协议",
+      "name_en": "Quality Gate",
+      "version": "1.4.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "protocol-single-question-guidance",
+      "layer": "L2",
+      "name_zh": "单问引导协议",
+      "name_en": "Single Question Guidance Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine"
+      ]
+    },
+    {
+      "id": "platform-codex-adapter",
+      "layer": "L3",
+      "name_zh": "Codex CLI平台适配器",
+      "name_en": "Codex CLI Adapter",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-comfyui-adapter",
+      "layer": "L3",
+      "name_zh": "ComfyUI多模态生成适配器",
+      "name_en": "ComfyUI Adapter",
+      "version": "1.0.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-coze-adapter",
+      "layer": "L3",
+      "name_zh": "Coze平台适配器",
+      "name_en": "Coze Adapter",
+      "version": "1.0.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-dify-adapter",
+      "layer": "L3",
+      "name_zh": "Dify平台适配器",
+      "name_en": "Dify Adapter",
+      "version": "1.0.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-feishu-adapter",
+      "layer": "L3",
+      "name_zh": "飞书平台适配器",
+      "name_en": "Feishu Adapter",
+      "version": "1.0.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-hermes-adapter",
+      "layer": "L3",
+      "name_zh": "Hermes Agent平台适配器",
+      "name_en": "Hermes Agent Adapter",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-n8n-adapter",
+      "layer": "L3",
+      "name_zh": "n8n工作流引擎适配器",
+      "name_en": "n8n Adapter",
+      "version": "1.0.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "platform-workbuddy-adapter",
+      "layer": "L3",
+      "name_zh": "WorkBuddy平台适配器",
+      "name_en": "WorkBuddy Adapter",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    },
+    {
+      "id": "constraint-flexible-rules",
+      "layer": "L4",
+      "name_zh": "灵活适配规则",
+      "name_en": "Flexible Rules",
+      "version": "1.1.0",
+      "dependencies": []
+    },
+    {
+      "id": "constraint-mandatory-rules",
+      "layer": "L4",
+      "name_zh": "强制执行规则(不可覆盖)",
+      "name_en": "Mandatory Rules",
+      "version": "1.1.0",
+      "dependencies": [
+        "protocol-confirmation-node",
+        "protocol-single-question-guidance"
+      ]
+    },
+    {
+      "id": "constraint-naming-convention",
+      "layer": "L4",
+      "name_zh": "命名规范(精确三分法)",
+      "name_en": "Naming Convention",
+      "version": "1.0.0",
+      "dependencies": []
+    },
+    {
+      "id": "constraint-output-format",
+      "layer": "L4",
+      "name_zh": "输出格式规范",
+      "name_en": "Output Format",
+      "version": "1.3.0",
+      "dependencies": [
+        "core-symbol-system"
+      ]
+    },
+    {
+      "id": "constraint-tool-integration",
+      "layer": "L4",
+      "name_zh": "工具集成规范",
+      "name_en": "Tool Integration Standard",
+      "version": "1.0.0",
+      "dependencies": []
+    },
+    {
+      "id": "protocol-early-termination",
+      "layer": "L2",
+      "name_zh": "紧急终止协议",
+      "name_en": "Early Termination Protocol",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "core-state-management-engine"
+      ]
+    },
+    {
+      "id": "platform-universal-adapter",
+      "layer": "L3",
+      "name_zh": "通用平台适配器",
+      "name_en": "Universal Platform Adapter",
+      "version": "1.1.0",
+      "dependencies": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ]
+    }
+  ],
+  "supported_platforms": [
+    "workbuddy",
+    "codex",
+    "hermes",
+    "feishu",
+    "n8n",
+    "comfyui",
+    "coze",
+    "dify"
+  ],
+  "protocols": {
+    "cascading_calls": true,
+    "context_inheritance": true,
+    "shared_memory": true
+  },
+  "activation_map_file": "skills/全域专家团/knowledge/protocol-activation-map.json",
+  "compatibility_matrix_file": "compatibility_matrix.json",
+  "data_flow_mermaid": "flowchart TD\n    subgraph L0[\"L0 核心引擎层\"]\n        MME[core-mental-model-engine<br/>思维框架引擎]\n        DBE[core-deliverable-backward-engine<br/>交付物倒推引擎]\n        DC[core-domain-classifier<br/>领域分类器]\n        CCS[core-complexity-channel-selector<br/>复杂度通道选择器]\n        SME[core-state-management-engine<br/>状态管理引擎]\n        SS[core-symbol-system<br/>符号系统]\n    end\n\n    subgraph L1[\"L1 流程层\"]\n        S1[pipeline-s1-need-diving<br/>需求深潜] --> S2[pipeline-s2-domain-disambiguation<br/>领域分类与消歧]\n        S2 --> S3[pipeline-s3-chain-decomposition<br/>链路拆解]\n        S3 --> S4[pipeline-s4-deliverable-anchoring<br/>交付物锚定]\n        S4 --> S5[pipeline-s5-architecture-design<br/>架构设计]\n        S5 --> S6[pipeline-s6-toolchain-matching<br/>工具链匹配]\n        S6 --> S7[pipeline-s7-expert-package-generation<br/>专家包生成]\n        S7 --> S8[pipeline-s8-platform-execution<br/>平台执行]\n    end\n\n    subgraph L2[\"L2 协议层\"]\n        QG[protocol-quality-gate<br/>质量守门]\n        CE[protocol-compliance-engine<br/>合规协议]\n        DS[protocol-data-security<br/>数据安全]\n        EH[protocol-error-handling<br/>异常处理与降级]\n        FL[protocol-feedback-loop<br/>反馈闭环]\n        HA[protocol-human-approval<br/>人机审批]\n        KP[protocol-knowledge-persistence<br/>知识沉淀]\n        AT[protocol-automation-trigger<br/>自动化触发]\n        SQG[protocol-single-question-guidance<br/>单问引导]\n        CN[protocol-confirmation-node<br/>确认节点]\n        PET[protocol-early-termination<br/>紧急终止]\n    end\n\n    subgraph L3[\"L3 平台适配层\"]\n        WB[platform-workbuddy-adapter]\n        CX[platform-codex-adapter]\n        HM[platform-hermes-adapter]\n        FS[platform-feishu-adapter]\n        N8[platform-n8n-adapter]\n        CF[platform-comfyui-adapter]\n        CZ[platform-coze-adapter]\n        DY[platform-dify-adapter]\n        PUA[platform-universal-adapter<br/>通用适配器]\n    end\n\n    subgraph L4[\"L4 全局约束层\"]\n        MR[constraint-mandatory-rules<br/>强制规则]\n        FR[constraint-flexible-rules<br/>灵活规则]\n        OF[constraint-output-format<br/>输出格式]\n        TI[constraint-tool-integration<br/>工具集成]\n        NC[constraint-naming-convention<br/>命名规范]\n    end\n\n    %% L0→L1 核心引擎被所有流程Skill调用\n    MME -.->|全程推理| S1\n    MME -.->|全程推理| S2\n    MME -.->|全程推理| S5\n    DBE -.->|倒推思维| S3\n    DBE -.->|倒推思维| S4\n    DBE -.->|倒推思维| S5\n    DC -->|领域分类| S2\n    CCS -->|通道选择| S2\n    SQG -->|单问协议| S1\n\n    %% L1→L2 协议检查点\n    S1 -.->|阶段结束| QG\n    S2 -.->|消歧确认| CN\n    S3 -.->|阶段结束| QG\n    S4 -.->|阶段结束| QG\n    S5 -.->|架构自检| QG\n    S5 -.->|合规检查| CE\n    S5 -.->|反馈设计| FL\n    S6 -.->|安全评估| DS\n    S7 -.->|全协议检查| QG\n    S7 -.->|全协议检查| CE\n    S7 -.->|全协议检查| DS\n    S7 -.->|全协议检查| EH\n\n    %% L1→L3 平台适配\n    S7 -->|按platform参数激活| WB\n    S7 -->|按platform参数激活| CX\n    S7 -->|按platform参数激活| HM\n    S7 -->|按platform参数激活| FS\n    S7 -->|按platform参数激活| N8\n    S7 -->|按platform参数激活| CF\n    S7 -->|按platform参数激活| CZ\n    S7 -->|按platform参数激活| DY\n    S7 -->|按platform参数激活| PUA\n    S8 -->|执行验证| WB\n\n    %% L1→L2 紧急终止\n    S8 -.->|紧急终止| PET\n\n    %% L1内部状态管理\n    S1 -.->|快照更新| SME\n    S2 -.->|快照更新| SME\n    S5 -.->|快照更新| SME\n    EH -.->|回退/降级| SME\n    CN -.->|跳转检查| SME\n\n    %% L4全局约束（贯穿所有层）\n    MR -.- |全程横贯| L0\n    MR -.- |全程横贯| L1\n    OF -.- |输出规范| L3\n    TI -.- |工具规范| L3\n    NC -.- |命名规范| L3\n\n    %% 样式\n    style L0 fill:#e1f5fe,stroke:#0288d1\n    style L1 fill:#e8f5e9,stroke:#388e3c\n    style L2 fill:#fff3e0,stroke:#f57c00\n    style L3 fill:#fce4ec,stroke:#c62828\n    style L4 fill:#f3e5f5,stroke:#7b1fa2",
+  "changelog": {
+    "1.1.0": {
+      "date": "2026-06-16",
+      "changes": [
+        "S8修复: platform-workbuddy-adapter截断描述修复为完整描述",
+        "S1修复: 所有13个L3+L4 Skill的Few-shot示例从1个占位扩展为3个实质示例",
+        "S6修复: 7个L3+5个L4共12个Skill增加顶层mandatory_calls",
+        "G1修复: constraint-flexible-rules 10条灵活规则增加说明+默认值+调整条件表",
+        "G5修复: constraint-output-format增加十四必含章节清单(Markdown格式)",
+        "B1修复: import_validate.py增加DFS循环依赖检测算法",
+        "G1确认: constraint-mandatory-rules 19条规则每条含说明+违规后果+反例",
+        "方向4确认: 所有Skill优先级确认(L0/L1/L2=由其他agent处理, L3=3, L4=4)",
+        "层级计数修正: README.md L0=6(L0=4), L2=10(L2=8), 总数37(总数33)",
+        "版本号: 全部1.0.0→1.1.0"
+      ]
+    },
+    "1.2.0": {
+      "date": "2026-06-16",
+      "changes": [
+        "改进1: S7依赖拆分——从18个硬依赖改为2个核心依赖+按activation_context条件激活",
+        "改进2: 领域分类从6选1升级为标签组合+时序演化(domain_profile替代confirmed_domain)",
+        "改进3: 快速通道从skip改为simplify，定义各阶段快速模式最小输出",
+        "改进4: 修复protocol-quality-gate自引用——从mandatory_calls中移除自调用",
+        "改进5: 新增platform-universal-adapter+platform_template_registry.json，8适配器→1通用+8模板",
+        "改进6: 合规激活从布尔开关升级为分级(none/warning/mandatory)+领域专属敏感词库",
+        "改进7: 团队规模去除RANDOM_IN_RANGE，改为small/medium/large枚举标记",
+        "改进8: 新增protocol-early-termination紧急终止协议",
+        "改进9: S1增加非A型场景few_shot示例(C型制造业设备维护)",
+        "改进10: 版本号统一为1.1.0，knowledge_base从kb://改为file://",
+        "改进11: 知识库挂载点从kb://伪协议改为file://可落地实现",
+        "改进12: 数据不可变原则增加受控修改通道(通过CN的strong_confirm发起)",
+        "改进13: E型激活规则从自然语言改为可执行JSON(union_of_subtypes)",
+        "改进14: shared_memory_keys增加{expert_team_id}_前缀，支持多专家团命名空间隔离",
+        "新增: protocol-early-termination(L2)和platform-universal-adapter(L3)",
+        "修复: core-state-management-engine/core-symbol-system/protocol-confirmation-node/protocol-single-question-guidance的重复mandatory_calls合并"
+      ]
+    },
+    "1.5.0": {
+      "date": "2026-06-17",
+      "changes": [
+        "深度审查: 基于15维框架对39个Skill进行全量审查，识别42项问题",
+        "改进#1-#10(P0): 补齐缺失config.json、修复S7依赖硬编码、激活矩阵全SkillID化、S2 Schema同步v1.4.0、S7 activation_context字段",
+        "改进#11-#28(P1): platform-universal-adapter/protocol-early-termination内容充实、四步确认门、few-shot与Schema匹配、依赖列表同步、版本号统一",
+        "改进#29-#39(P2): kb://全部迁移为file://、trigger_keywords去重、20条→21条强制规则、14章节统一、team_size整数化",
+        "改进#40-#44(P3): UTF-8编码、重复函数清理、frontmatter解析容错、rag类型软警告、兼容矩阵更新"
+      ]
+    },
+    "1.5.0-orchestrator": {
+      "date": "2026-06-17",
+      "changes": [
+        "新增: team-orchestrator (L-Meta元编排层) — 统一入口编排器，用户只需触发一次，系统自动按S1→S8执行全流程",
+        "改造: S1-S8 trigger_keywords弱化，改为阶段专属关键词(如'S1执行'、'S2执行')，避免用户误触发单个阶段",
+        "改造: S1-S8 添加编排关系声明和下一阶段路由，由team-orchestrator自动衔接",
+        "改造: S1原trigger_keywords('开始/帮我建/我想做/专家团/需求/刚开始')迁移至team-orchestrator",
+        "更新: manifest.json新增L-Meta层，skills_count 39→40",
+        "更新: dependency_list.json新增team-orchestrator依赖声明和layer_rules",
+        "更新: compatibility_matrix.json新增team-orchestrator条目",
+        "更新: README.md反映统一入口架构"
+      ]
+    }
+  }
+}

@@ -1,0 +1,203 @@
+{
+  "id": "protocol-quality-gate",
+  "layer": "L2",
+  "name_zh": "质量守门协议",
+  "name_en": "Quality Gate",
+  "version": "1.4.0",
+  "description": "八层65项自检(原八层59项+标注比例约束+商业模式可行性)→汇总为架构健康检查报告→🟡有条件通过→🔴阻断输出。v1.4.0新增认知诚实标注比例约束和商业模式可行性检查。",
+  "trigger_keywords": [
+    "自检",
+    "质量",
+    "健康检查",
+    "MECE校验",
+    "阻断"
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "architecture": {
+        "type": "object",
+        "description": "S5架构输出"
+      },
+      "expert_package": {
+        "type": "object",
+        "description": "S7专家包输出"
+      },
+      "previous_stage_outputs": {
+        "type": "object",
+        "description": "前序阶段输出"
+      }
+    },
+    "required": [
+      "architecture"
+    ]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "health_report": {
+        "type": "object",
+        "properties": {
+          "architecture": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "string"
+          },
+          "compliance": {
+            "type": "string"
+          },
+          "workflow": {
+            "type": "string"
+          },
+          "data_security": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "platform_executability": {
+            "type": "string"
+          },
+          "cross_stage_consistency": {
+            "type": "string"
+          }
+        }
+      },
+      "warnings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "blockers": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      }
+    },
+    "required": [
+      "health_report",
+      "warnings",
+      "blockers"
+    ]
+  },
+  "tool_declarations": [],
+  "few_shot_examples": [
+    {
+      "name": "正常流程",
+      "input": {
+        "user_input": "小红书内容团队要从选题到发布形成稳定流程",
+        "context": {
+          "domain_type": "A",
+          "platform": "workbuddy"
+        }
+      },
+      "output": {
+        "status": "completed",
+        "decision": "质量守门协议已按A型内容传播场景执行",
+        "next_action": "进入下一阶段或触发质量门控"
+      }
+    },
+    {
+      "name": "边界/异常",
+      "input": {
+        "user_input": "我们做医疗科普，但想尽量直接承诺效果",
+        "context": {
+          "domain_type": "A",
+          "regulated": true
+        }
+      },
+      "output": {
+        "status": "blocked_or_review",
+        "risk": "强监管合规风险",
+        "required_call": "protocol-compliance-engine"
+      }
+    },
+    {
+      "name": "快速通道变体",
+      "input": {
+        "user_input": "只有我一个人，先要一个能用的提示词版客服助手",
+        "context": {
+          "role_count": 1,
+          "deliverable_count": 2,
+          "channel": "fast"
+        }
+      },
+      "output": {
+        "status": "simplified",
+        "strategy": "保留核心交付物与兜底方案，跳过或内联低风险阶段"
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {
+      "type": "static",
+      "path": "file://quality-gate/seven-layers-checklist",
+      "description": "七层自检清单(5.1-5.7)"
+    },
+    {
+      "type": "dynamic",
+      "path": "file://runtime/protocol-quality-gate/state",
+      "description": "运行时状态、用户确认和阶段快照"
+    },
+    {
+      "type": "rag",
+      "path": "file://rag/protocol-quality-gate/references",
+      "description": "向量检索：源文档、平台规则和历史案例"
+    }
+  ],
+  "dependencies": [
+    "core-mental-model-engine"
+  ],
+  "execution_logic": "七层自检(5.1-5.7)+跨阶段一致性检查(5.7.5)→汇总为架构健康检查报告(5.8)。5.1架构层(6项);5.2角色层MECE三问(8项,含命名规范);5.3合规层(6项);5.4工作流层(6项);5.5数据安全层(4项);5.6用户层(6项);5.7平台可执行性层(12项);5.7.5跨阶段一致性。报告格式：✅全部通过→'全部通过';🟡有≥1个→列🟡条目+简要说明(≤3行);🔴有≥1个→列所有🔴+必须修复行动(阻断输出)。MECE三问(阻断性)：(1)覆盖性:每个环节有至少一个角色负责?(2)独立性:两个角色核心职责重叠>30%?(3)责任唯一性:每个交付物有且仅有一个第一责任人?任一不通过→🔴阻断。",
+  "cascading_calls": [
+    "core-mental-model-engine"
+  ],
+  "context_inheritance": [
+    "current_stage_outputs",
+    "domain_type"
+  ],
+  "shared_memory_keys": [
+    "protocol-quality-gate_state"
+  ],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "同层或下层可调用",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过回退协议",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "trigger": "before_output",
+        "call": "self.execute_10_checks",
+        "timing": "before_output"
+      },
+      {
+        "callee": "protocol-quality-gate",
+        "when": "阶段结束或产出方案前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+      }
+    ]
+  },
+  "compatibility": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "priority": 2,
+  "mandatory_calls": [
+    {
+      "callee": "self.execute_seven_layer_check",
+      "when": "before_output",
+      "reason": "自检引擎必须执行7层48项检查后方可输出健康报告"
+    },
+    {
+      "callee": "self.execute_cross_stage_consistency",
+      "when": "stage >= 5",
+      "reason": "阶段5+必须执行跨阶段一致性检查(§5.7.5)"
+    }
+  ]
+}

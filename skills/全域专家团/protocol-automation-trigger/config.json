@@ -1,0 +1,201 @@
+{
+  "id": "protocol-automation-trigger",
+  "layer": "L2",
+  "name_zh": "自动化触发设计",
+  "name_en": "Automation Trigger Design",
+  "version": "1.1.0",
+  "description": "D型/F型/E型(含D/F)强制激活。定义触发类型(定时/事件/条件)，填写触发需求声明表(12必填字段)，触发间依赖编排(DAG)。快速通道跳过，纯提示词降级。",
+  "trigger_keywords": [
+    "定时",
+    "自动化",
+    "触发",
+    "调度",
+    "cron",
+    "DAG",
+    "5.9"
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "domain_type": {
+        "type": "string",
+        "enum": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      "platform": {
+        "type": "string"
+      },
+      "sop_phases": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "domain_type",
+      "platform"
+    ]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "triggers": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "trigger_dag": {
+        "type": "string"
+      },
+      "platform_adaptation": {
+        "type": "string"
+      },
+      "monitoring_metrics": {
+        "type": "array",
+        "description": "Doc2 §5.9.6调度监控指标",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "执行成功率",
+                "平均时长",
+                "调度偏移",
+                "连续失败",
+                "依赖阻塞率"
+              ]
+            },
+            "healthy": {
+              "type": "string"
+            },
+            "alert": {
+              "type": "string"
+            },
+            "action": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "required": [
+      "triggers",
+      "trigger_dag",
+      "platform_adaptation"
+    ]
+  },
+  "tool_declarations": [],
+  "few_shot_examples": [
+    {
+      "name": "正常流程",
+      "input": {
+        "user_input": "小红书内容团队要从选题到发布形成稳定流程",
+        "context": {
+          "domain_type": "A",
+          "platform": "workbuddy"
+        }
+      },
+      "output": {
+        "status": "completed",
+        "decision": "自动化触发设计已按A型内容传播场景执行",
+        "next_action": "进入下一阶段或触发质量门控"
+      }
+    },
+    {
+      "name": "边界/异常",
+      "input": {
+        "user_input": "我们做医疗科普，但想尽量直接承诺效果",
+        "context": {
+          "domain_type": "A",
+          "regulated": true
+        }
+      },
+      "output": {
+        "status": "blocked_or_review",
+        "risk": "强监管合规风险",
+        "required_call": "protocol-compliance-engine"
+      }
+    },
+    {
+      "name": "快速通道变体",
+      "input": {
+        "user_input": "只有我一个人，先要一个能用的提示词版客服助手",
+        "context": {
+          "role_count": 1,
+          "deliverable_count": 2,
+          "channel": "fast"
+        }
+      },
+      "output": {
+        "status": "simplified",
+        "strategy": "保留核心交付物与兜底方案，跳过或内联低风险阶段"
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {
+      "type": "static",
+      "path": "file://automation/platform-scheduling-map",
+      "description": "各平台调度能力映射"
+    },
+    {
+      "type": "dynamic",
+      "path": "file://runtime/protocol-automation-trigger/state",
+      "description": "运行时状态、用户确认和阶段快照"
+    },
+    {
+      "type": "rag",
+      "path": "file://rag/protocol-automation-trigger/references",
+      "description": "向量检索：源文档、平台规则和历史案例"
+    }
+  ],
+  "dependencies": [
+    "core-mental-model-engine"
+  ],
+  "execution_logic": "(1)定义触发类型(定时/事件/条件)→(2)填写触发需求声明表→(3)触发间依赖编排(DAG)→(4)按平台适配调度能力→(5)无工具时纯提示词降级→(6)纳入调度监控指标。触发需求声明表必填字段(12)：触发名称+类型+条件/周期+执行角色+执行模式+传递数据+输出去向+人工确认+失败策略+超时阈值+幂等性保障+纯提示词降级。依赖失败传播：前置失败→blocked;前置超时→等待1.5×超时;前置跳过→输入缺失兜底。平台调度能力：WorkBuddy:Automation+MCP;Codex:需外部crontab;Hermes:内置定时+消息监听;Coze:定时/Webhook触发器;Dify:Schedule Trigger;飞书:自动化+事件订阅;n8n:Cron+Webhook+IF/Switch;无工具:纯提示词降级。",
+  "cascading_calls": [
+    "core-mental-model-engine"
+  ],
+  "context_inheritance": [
+    "current_stage_outputs",
+    "domain_type"
+  ],
+  "shared_memory_keys": [
+    "protocol-automation-trigger_state"
+  ],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "同层或下层可调用",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过回退协议",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "trigger": "before_output",
+        "call": "self.execute_10_checks",
+        "timing": "before_output"
+      },
+      {
+        "callee": "protocol-quality-gate",
+        "when": "阶段结束或产出方案前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+      }
+    ]
+  },
+  "compatibility": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "priority": 2
+}

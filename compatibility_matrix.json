@@ -1,0 +1,162 @@
+{
+  "team-orchestrator": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "constraint-flexible-rules": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "constraint-mandatory-rules": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "constraint-naming-convention": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "constraint-output-format": {
+    "min_compatible": "1.3.0",
+    "breaking_change": "2.0.0"
+  },
+  "constraint-tool-integration": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-complexity-channel-selector": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-deliverable-backward-engine": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-domain-classifier": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-mental-model-engine": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-state-management-engine": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "core-symbol-system": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s1-need-diving": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s2-domain-disambiguation": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s3-chain-decomposition": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s4-deliverable-anchoring": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s5-architecture-design": {
+    "min_compatible": "1.3.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s6-toolchain-matching": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s7-expert-package-generation": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "pipeline-s8-platform-execution": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-codex-adapter": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-comfyui-adapter": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-coze-adapter": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-dify-adapter": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-feishu-adapter": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-hermes-adapter": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-n8n-adapter": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-universal-adapter": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "platform-workbuddy-adapter": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-automation-trigger": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-compliance-engine": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-confirmation-node": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-data-security": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-early-termination": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-error-handling": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-feedback-loop": {
+    "min_compatible": "1.3.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-human-approval": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-knowledge-persistence": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-quality-gate": {
+    "min_compatible": "1.4.0",
+    "breaking_change": "2.0.0"
+  },
+  "protocol-single-question-guidance": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  }
+}

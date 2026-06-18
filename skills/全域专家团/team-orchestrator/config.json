@@ -1,0 +1,235 @@
+{
+  "id": "team-orchestrator",
+  "layer": "L-Meta",
+  "name_zh": "全域专家团总编排器",
+  "name_en": "Team Orchestrator",
+  "version": "1.0.0",
+  "description": "全域专家团构建skills系统统一入口编排器。用户只需触发此skill一次，系统自动按S1→S8顺序执行全流程，L0/L2/L3/L4层skill按需自动激活。",
+  "trigger_keywords": [
+    "开始",
+    "帮我建",
+    "我想做",
+    "专家团",
+    "需求",
+    "刚开始",
+    "构建专家",
+    "建个AI",
+    "AI专家",
+    "全域专家团",
+    "构建团队",
+    "帮我构建",
+    "想要构建"
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "user_first_message": {
+        "type": "string",
+        "description": "用户的首次交互消息，表达构建专家团的意图"
+      },
+      "user_context": {
+        "type": "object",
+        "properties": {
+          "experience_level": {
+            "type": "string",
+            "enum": ["novice", "intermediate", "advanced"],
+            "description": "用户AI经验水平"
+          },
+          "session_id": {
+            "type": "string",
+            "description": "会话ID，用于状态隔离"
+          }
+        }
+      }
+    },
+    "required": ["user_first_message"]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "expert_team_package": {
+        "type": "object",
+        "description": "最终交付的专家包"
+      },
+      "platform_deployed": {
+        "type": "boolean",
+        "description": "是否已部署到目标平台"
+      },
+      "pipeline_summary": {
+        "type": "object",
+        "properties": {
+          "domain_type": {"type": "string"},
+          "channel_used": {"type": "string", "enum": ["fast", "standard", "strict"]},
+          "stages_completed": {"type": "array", "items": {"type": "string"}},
+          "total_stages": {"type": "integer"},
+          "skills_activated": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "required": ["expert_team_package", "pipeline_summary"]
+  },
+  "tool_declarations": [],
+  "few_shot_examples": [
+    {
+      "name": "标准流程 - 内容创作团队",
+      "input": {
+        "user_input": "我想建个AI专家团帮我运营小红书美食号",
+        "context": {
+          "domain_type": "A",
+          "platform": "workbuddy",
+          "channel": "standard"
+        }
+      },
+      "output": {
+        "status": "completed",
+        "pipeline_summary": {
+          "domain_type": "A",
+          "channel_used": "standard",
+          "stages_completed": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+          "total_stages": 8,
+          "skills_activated": ["team-orchestrator", "pipeline-s1-need-diving", "pipeline-s2-domain-disambiguation", "pipeline-s3-chain-decomposition", "pipeline-s4-deliverable-anchoring", "pipeline-s5-architecture-design", "pipeline-s6-toolchain-matching", "pipeline-s7-expert-package-generation", "pipeline-s8-platform-execution", "core-mental-model-engine", "core-complexity-channel-selector", "core-domain-classifier", "core-deliverable-backward-engine", "core-state-management-engine", "core-symbol-system", "protocol-single-question-guidance", "protocol-confirmation-node", "protocol-quality-gate", "protocol-compliance-engine", "protocol-feedback-loop", "constraint-output-format", "constraint-naming-convention", "constraint-mandatory-rules", "constraint-flexible-rules", "platform-workbuddy-adapter"]
+        }
+      }
+    },
+    {
+      "name": "快速通道 - 个人财税科普",
+      "input": {
+        "user_input": "帮我建个AI专家团，我是做个人财税科普的",
+        "context": {
+          "domain_type": "A",
+          "channel": "fast",
+          "team_size": 1
+        }
+      },
+      "output": {
+        "status": "completed",
+        "pipeline_summary": {
+          "domain_type": "A",
+          "channel_used": "fast",
+          "stages_completed": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+          "total_stages": 8,
+          "skills_activated": ["team-orchestrator", "pipeline-s1-need-diving", "pipeline-s2-domain-disambiguation", "pipeline-s3-chain-decomposition", "pipeline-s4-deliverable-anchoring", "pipeline-s5-architecture-design", "pipeline-s6-toolchain-matching", "pipeline-s7-expert-package-generation", "pipeline-s8-platform-execution", "core-mental-model-engine", "protocol-quality-gate", "constraint-output-format", "platform-workbuddy-adapter"]
+        }
+      }
+    },
+    {
+      "name": "严格通道 - 医疗知识库",
+      "input": {
+        "user_input": "我们医院想建AI专家团帮医生查诊疗指南",
+        "context": {
+          "domain_type": "C",
+          "channel": "strict",
+          "regulated": true
+        }
+      },
+      "output": {
+        "status": "completed",
+        "pipeline_summary": {
+          "domain_type": "C",
+          "channel_used": "strict",
+          "stages_completed": ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+          "total_stages": 8,
+          "skills_activated": ["team-orchestrator", "pipeline-s1-need-diving", "pipeline-s2-domain-disambiguation", "pipeline-s3-chain-decomposition", "pipeline-s4-deliverable-anchoring", "pipeline-s5-architecture-design", "pipeline-s6-toolchain-matching", "pipeline-s7-expert-package-generation", "pipeline-s8-platform-execution", "core-mental-model-engine", "core-deliverable-backward-engine", "core-domain-classifier", "core-complexity-channel-selector", "core-state-management-engine", "core-symbol-system", "protocol-quality-gate", "protocol-compliance-engine", "protocol-data-security", "protocol-human-approval", "protocol-confirmation-node", "protocol-single-question-guidance", "constraint-output-format", "constraint-naming-convention", "constraint-tool-integration", "constraint-mandatory-rules", "constraint-flexible-rules", "platform-workbuddy-adapter"]
+        }
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {
+      "type": "static",
+      "path": "file://./knowledge/protocol-activation-map.json",
+      "description": "L2协议激活矩阵"
+    },
+    {
+      "type": "static",
+      "path": "file://./knowledge/stage-routing.json",
+      "description": "阶段路由配置"
+    },
+    {
+      "type": "dynamic",
+      "path": "file://./knowledge/orchestrator-state.json",
+      "description": "编排器运行时状态"
+    }
+  ],
+  "dependencies": [
+    "pipeline-s1-need-diving",
+    "pipeline-s2-domain-disambiguation",
+    "pipeline-s3-chain-decomposition",
+    "pipeline-s4-deliverable-anchoring",
+    "pipeline-s5-architecture-design",
+    "pipeline-s6-toolchain-matching",
+    "pipeline-s7-expert-package-generation",
+    "pipeline-s8-platform-execution"
+  ],
+  "mandatory_calls": [
+    {
+      "trigger": "every_stage_transition",
+      "call": "protocol-confirmation-node.execute",
+      "timing": "before_next_stage"
+    },
+    {
+      "trigger": "every_stage_end",
+      "call": "protocol-quality-gate.check",
+      "timing": "after_stage_output"
+    }
+  ],
+  "execution_logic": "(1)初始化编排器状态→(2)S1需求深潜(自动加载pipeline-s1-need-diving)→(3)S2领域消歧(自动加载pipeline-s2-domain-disambiguation)→(4)通道路由判定→(5)S3链路拆解→(6)S4交付物锚定→(7)S5架构设计→(8)S6工具链匹配→(9)S7专家包生成(按激活矩阵自动激活L2协议+L3适配器)→(10)S8平台执行→(11)最终交付。全程L0/L4自动横贯，用户无需感知底层skill。",
+  "cascading_calls": [
+    "pipeline-s1-need-diving",
+    "pipeline-s2-domain-disambiguation",
+    "pipeline-s3-chain-decomposition",
+    "pipeline-s4-deliverable-anchoring",
+    "pipeline-s5-architecture-design",
+    "pipeline-s6-toolchain-matching",
+    "pipeline-s7-expert-package-generation",
+    "pipeline-s8-platform-execution"
+  ],
+  "context_inheritance": [
+    "all_stage_outputs"
+  ],
+  "shared_memory_keys": [
+    "{expert_team_id}_orchestrator_state",
+    "{expert_team_id}_pipeline_progress",
+    "{expert_team_id}_channel",
+    "{expert_team_id}_domain_type"
+  ],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "L-Meta可调用所有层(L0/L1/L2/L3/L4)",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过protocol-confirmation-node的strong_confirm发起受控修改请求",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "callee": "protocol-confirmation-node",
+        "when": "阶段跳转前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+      },
+      {
+        "callee": "protocol-quality-gate",
+        "when": "阶段结束或产出方案前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+      }
+    ]
+  },
+  "compatibility": {
+    "min_compatible": "1.0.0",
+    "breaking_change": "2.0.0"
+  },
+  "priority": 0,
+  "orchestration": {
+    "entry_point": true,
+    "auto_chain": true,
+    "sub_skills_hidden_from_user": true,
+    "channel_routing": {
+      "fast": ["S1", "S2", "S3(simplified)", "S4", "S5(simplified)", "S6", "S7(minimal_protocols)", "S8"],
+      "standard": ["S1", "S2", "S3", "S4", "S5", "S6", "S7(full_protocols)", "S8"],
+      "strict": ["S1", "S2", "S3", "S4", "S5", "S6", "S7(all_protocols+human_approval)", "S8"]
+    },
+    "l2_activation_source": "knowledge/protocol-activation-map.json",
+    "l3_activation_rule": "only_target_platform_adapter",
+    "l0_l4_activation_rule": "always_active"
+  }
+}

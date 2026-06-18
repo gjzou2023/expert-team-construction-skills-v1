@@ -1,0 +1,1049 @@
+{
+  "version": "1.1.0",
+  "date": "2026-06-16",
+  "dependencies": [
+    {
+      "skill_id": "team-orchestrator",
+      "layer": "L-Meta",
+      "depends_on": [
+        "pipeline-s1-need-diving",
+        "pipeline-s2-domain-disambiguation",
+        "pipeline-s3-chain-decomposition",
+        "pipeline-s4-deliverable-anchoring",
+        "pipeline-s5-architecture-design",
+        "pipeline-s6-toolchain-matching",
+        "pipeline-s7-expert-package-generation",
+        "pipeline-s8-platform-execution"
+      ],
+      "cascading_calls": [
+        "pipeline-s1-need-diving",
+        "pipeline-s2-domain-disambiguation",
+        "pipeline-s3-chain-decomposition",
+        "pipeline-s4-deliverable-anchoring",
+        "pipeline-s5-architecture-design",
+        "pipeline-s6-toolchain-matching",
+        "pipeline-s7-expert-package-generation",
+        "pipeline-s8-platform-execution"
+      ],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_orchestrator_state",
+        "{expert_team_id}_pipeline_progress",
+        "{expert_team_id}_channel",
+        "{expert_team_id}_domain_type"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ],
+      "orchestration": {
+        "entry_point": true,
+        "auto_chain": true,
+        "sub_skills_hidden_from_user": true,
+        "l2_activation_source": "knowledge/protocol-activation-map.json",
+        "l3_activation_rule": "only_target_platform_adapter",
+        "l0_l4_activation_rule": "always_active"
+      }
+    },
+    {
+      "skill_id": "constraint-flexible-rules",
+      "layer": "L4",
+      "depends_on": [],
+      "cascading_calls": [],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "constraint-flexible-rules_violations"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "constraint-mandatory-rules",
+      "layer": "L4",
+      "depends_on": [
+        "protocol-confirmation-node",
+        "protocol-single-question-guidance"
+      ],
+      "cascading_calls": [
+        "protocol-confirmation-node",
+        "protocol-single-question-guidance"
+      ],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "constraint-mandatory-rules_violations"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "constraint-naming-convention",
+      "layer": "L4",
+      "depends_on": [],
+      "cascading_calls": [],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "constraint-naming-convention_violations"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "constraint-output-format",
+      "layer": "L4",
+      "depends_on": [
+        "core-symbol-system"
+      ],
+      "cascading_calls": [
+        "core-symbol-system"
+      ],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "constraint-output-format_violations"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "constraint-tool-integration",
+      "layer": "L4",
+      "depends_on": [],
+      "cascading_calls": [],
+      "context_inheritance": [
+        "all_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "constraint-tool-integration_violations"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-complexity-channel-selector",
+      "layer": "L0",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s1_outputs"
+      ],
+      "shared_memory_keys": [
+        "selected_channel",
+        "channel_confirmation_card"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-deliverable-backward-engine",
+      "layer": "L0",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s1_need_portrait",
+        "s2_domain_type"
+      ],
+      "shared_memory_keys": [
+        "deliverable_registry",
+        "role_deliverable_map"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-domain-classifier",
+      "layer": "L0",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s1_need_portrait"
+      ],
+      "shared_memory_keys": [
+        "domain_type",
+        "compliance_activation_map"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-mental-model-engine",
+      "layer": "L0",
+      "depends_on": [],
+      "cascading_calls": [],
+      "context_inheritance": [
+        "previous_stage_outputs",
+        "decision_snapshots"
+      ],
+      "shared_memory_keys": [
+        "reasoning_history",
+        "model_activation_log"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-state-management-engine",
+      "layer": "L0",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "core-state-management-engine_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "全局质量门控"
+        }
+      ]
+    },
+    {
+      "skill_id": "core-symbol-system",
+      "layer": "L0",
+      "depends_on": [],
+      "cascading_calls": [],
+      "context_inheritance": [
+        "current_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "core-symbol-system_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "全局质量门控"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s1-need-diving",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-complexity-channel-selector",
+        "protocol-single-question-guidance"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine",
+        "core-complexity-channel-selector",
+        "protocol-single-question-guidance"
+      ],
+      "context_inheritance": [],
+      "shared_memory_keys": [
+        "{expert_team_id}_s1_decisions",
+        "{expert_team_id}_s1_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s2-domain-disambiguation",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-domain-classifier",
+        "protocol-confirmation-node"
+      ],
+      "cascading_calls": [
+        "core-domain-classifier",
+        "protocol-confirmation-node"
+      ],
+      "context_inheritance": [
+        "s1_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s2_decisions",
+        "{expert_team_id}_s2_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s3-chain-decomposition",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s2_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s3_decisions",
+        "{expert_team_id}_s3_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s4-deliverable-anchoring",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s3_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s4_decisions",
+        "{expert_team_id}_s4_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s5-architecture-design",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine",
+        "protocol-quality-gate",
+        "protocol-feedback-loop",
+        "protocol-compliance-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine",
+        "protocol-quality-gate",
+        "protocol-feedback-loop",
+        "protocol-compliance-engine"
+      ],
+      "context_inheritance": [
+        "s4_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s5_decisions",
+        "{expert_team_id}_s5_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s6-toolchain-matching",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s6_decisions",
+        "{expert_team_id}_s6_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s7-expert-package-generation",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine",
+        "core-deliverable-backward-engine"
+      ],
+      "conditional_activation": {
+        "_description": "改进1：L2协议和L3适配器根据activation_context按需激活，不在depends_on中硬声明",
+        "L2_protocol_rule": "按domain_type+is_regulated+market条件从activation_map解析激活列表",
+        "L3_adapter_rule": "仅激活platform对应的单个L3适配器",
+        "resolver": "resolve_s7_dependencies(activation_context) -> 见pipeline-s7 SKILL.md步骤1"
+      },
+      "context_inheritance": [
+        "s6_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s7_decisions",
+        "{expert_team_id}_s7_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        }
+      ]
+    },
+    {
+      "skill_id": "pipeline-s8-platform-execution",
+      "layer": "L1",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s7_outputs"
+      ],
+      "shared_memory_keys": [
+        "{expert_team_id}_s8_decisions",
+        "{expert_team_id}_s8_snapshot"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-confirmation-node",
+          "when": "阶段跳转前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 流程阶段跳转 -> SK-102"
+        },
+        {
+          "callee": "protocol-error-handling",
+          "when": "平台部署或验证失败时",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 执行失败 -> 验证/回退"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-codex-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-codex-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-comfyui-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-comfyui-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-coze-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-coze-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-dify-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-dify-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-feishu-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-feishu-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-hermes-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-hermes-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-n8n-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-n8n-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "platform-workbuddy-adapter",
+      "layer": "L3",
+      "depends_on": [
+        "core-mental-model-engine",
+        "constraint-output-format"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "s5_architecture",
+        "s6_toolchain",
+        "s7_expert_package"
+      ],
+      "shared_memory_keys": [
+        "platform-workbuddy-adapter_output"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        },
+        {
+          "callee": "protocol-quality-gate",
+          "when": "专家包生成完成后",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: 平台生成完成 -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-automation-trigger",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-automation-trigger_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-compliance-engine",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-compliance-engine_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-confirmation-node",
+      "layer": "L2",
+      "depends_on": [
+        "core-state-management-engine"
+      ],
+      "cascading_calls": [
+        "core-state-management-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "protocol-confirmation-node_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "全局质量门控"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-data-security",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-data-security_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-error-handling",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine",
+        "core-state-management-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine",
+        "core-state-management-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-error-handling_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-feedback-loop",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-feedback-loop_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-human-approval",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-human-approval_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-knowledge-persistence",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-knowledge-persistence_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+        }
+      ]
+    },
+    {
+      "skill_id": "protocol-quality-gate",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs",
+        "domain_type"
+      ],
+      "shared_memory_keys": [
+        "protocol-quality-gate_state"
+      ],
+      "mandatory_calls": []
+    },
+    {
+      "skill_id": "protocol-single-question-guidance",
+      "layer": "L2",
+      "depends_on": [
+        "core-mental-model-engine"
+      ],
+      "cascading_calls": [
+        "core-mental-model-engine"
+      ],
+      "context_inheritance": [
+        "current_stage_outputs"
+      ],
+      "shared_memory_keys": [
+        "protocol-single-question-guidance_state"
+      ],
+      "mandatory_calls": [
+        {
+          "callee": "protocol-quality-gate",
+          "when": "阶段结束或产出方案前",
+          "reason": "全局质量门控"
+        }
+      ]
+    }
+  ],
+  "layer_rules": {
+    "call_direction": "L-Meta(元编排层)可调用所有层(L0-L4); Layer N 可调用 Layer 0 ~ Layer N；S7可按platform参数调用L3适配器。team-orchestrator是唯一用户入口，其余skill由其自动编排。",
+    "data_passing_format": "JSON-compatible结构",
+    "immutability": "上游产出一经确认，下游不得擅自修改；但可通过protocol-confirmation-node的strong_confirm发起受控修改请求(须含修改原因+影响范围+回退方案)，修改被批准后SME创建新决策快照，原快照标记为superseded但保留历史",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "namespace_isolation": "shared_memory_keys增加{expert_team_id}_前缀，同一用户构建多个专家团时状态隔离；expert_team_id在S1阶段分配"
+  }
+}

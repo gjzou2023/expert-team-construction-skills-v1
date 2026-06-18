@@ -1,0 +1,152 @@
+{
+  "_deprecated_note": "改进#8修复: 此文件保留1D domain→protocol映射用于向后兼容。新代码应使用 skills/全域专家团/knowledge/protocol-activation-map.json（2D domain×channel矩阵，协议名使用完整Skill ID）。",
+  "version": "1.1.0",
+  "date": "2026-06-16",
+  "domain_type": {
+    "A": [
+      "protocol-compliance-engine",
+      "protocol-feedback-loop"
+    ],
+    "B": [
+      "protocol-feedback-loop"
+    ],
+    "C": [
+      "protocol-feedback-loop",
+      "protocol-knowledge-persistence"
+    ],
+    "D": [
+      "protocol-automation-trigger",
+      "protocol-feedback-loop",
+      "protocol-error-handling"
+    ],
+    "E": {
+      "_rule": "union_of_subtypes",
+      "_description": "E型不再是独立类型，而是A-F标签的组合标记。根据domain_profile.primary_domain和secondary_domains的并集激活对应协议。",
+      "_subtypes_source": "s2_disambiguation_log -> domain_profile",
+      "_resolver": "resolve_e_type_protocols(subtypes) -> union(activation_map.domain_type[subtype] for subtype in subtypes)",
+      "_example": "primary_domain=A, secondary_domains=[F] -> activation_map.domain_type[A] + activation_map.domain_type[F]"
+    },
+    "F": [
+      "protocol-automation-trigger",
+      "protocol-feedback-loop",
+      "protocol-human-approval"
+    ]
+  },
+  "regulated_industry": [
+    "protocol-compliance-engine",
+    "protocol-human-approval",
+    "protocol-data-security"
+  ],
+  "fast_channel": {
+    "_description": "改进3：快速通道从'跳过'改为'简化'——每个阶段仍产出最小必要输出",
+    "simplifications": [
+      {
+        "stage": "pipeline-s3-chain-decomposition",
+        "mode": "simplify",
+        "minimal_output": {
+          "chain_list": [{"name": "main_chain", "steps": ["input -> process -> output"]}],
+          "note": "快速模式：单链路直通，不拆子链路"
+        }
+      },
+      {
+        "stage": "pipeline-s5-architecture-design",
+        "mode": "simplify",
+        "minimal_output": {
+          "roles": [{"name": "主理人", "covers": "全链路"}],
+          "sop": "skip",
+          "feedback_loops": [],
+          "note": "快速模式：单人角色，不设计SOP和反馈回路"
+        }
+      }
+    ],
+    "degradations": [
+      "degrade:protocol-automation-trigger"
+    ]
+  },
+  "compliance_activation_map": {
+    "_description": "改进6：合规激活从布尔开关升级为分级(none/warning/mandatory)+领域专属规则",
+    "4.1_content_compliance": {
+      "A": {"level": "warning", "sensitive_categories": ["平台内容规范"]},
+      "F": {"level": "warning", "sensitive_categories": ["客服话术规范"]},
+      "default": {"level": "none", "sensitive_categories": []}
+    },
+    "4.2_sensitive_words": {
+      "_description": "按领域的敏感词注册表",
+      "medical": ["处方", "治愈率", "疗效保证", "根治", "无副作用", "秘方", "祖传"],
+      "finance": ["保本", "稳赚", "内部消息", "代客理财", "100%收益", "涨停"],
+      "education": ["包过", "100%升学", "名校保录", "保分", "原题"],
+      "default": []
+    },
+    "4.3_data_compliance": {
+      "_description": "数据合规法规列表和数据驻留地",
+      "domestic": {"level": "none", "regulations": [], "data_residency": "CN"},
+      "overseas_EU": {"level": "mandatory", "regulations": ["GDPR"], "data_residency": "EU"},
+      "overseas_general": {"level": "warning", "regulations": ["PIPL"], "data_residency": "multi_region"},
+      "global": {"level": "mandatory", "regulations": ["GDPR", "PIPL", "CCPA"], "data_residency": "multi_region"}
+    },
+    "4.4_human_approval": {
+      "C": {"level": "warning", "trigger_conditions": ["涉及专业建议", "客户投诉升级"]},
+      "F": {"level": "warning", "trigger_conditions": ["退款申请", "投诉升级", "价格争议"]},
+      "regulated": {"level": "mandatory", "trigger_conditions": ["涉及诊疗建议", "跨境数据传输", "敏感数据处理"]},
+      "default": {"level": "none", "trigger_conditions": []}
+    },
+    "4.5_privacy": {
+      "F": {"level": "warning", "data_categories": ["用户对话记录", "联系方式"]},
+      "regulated_cross_border": {"level": "mandatory", "data_categories": ["跨境个人数据", "生物识别信息"]},
+      "default": {"level": "none", "data_categories": []}
+    }
+  },
+  "role_count_gte_4": [
+    "platform-workbuddy-adapter:team_type",
+    "pipeline-s5-architecture-design:team_required"
+  ],
+  "international_platform": [
+    "protocol-compliance-engine:international_rules"
+  ],
+  "keyword_priority_and_exclusion": {
+    "_description": "当多个Skill的trigger_keywords同时匹配用户输入时，按以下规则消歧",
+    "priority_rule": "同关键词命中时，低层Skill优先（L0=0最高 > L4=4最低）；同层内按pipeline > protocol > constraint排序",
+    "overlapping_keywords": [
+      {
+        "keyword": "推理",
+        "matched_skills": ["core-mental-model-engine", "pipeline-s5-architecture-design"],
+        "priority_order": ["core-mental-model-engine(L0,priority=0)", "pipeline-s5-architecture-design(L1,priority=1)"],
+        "resolution": "core-mental-model-engine始终优先激活;pipeline-s5仅在架构设计场景下由流程引擎显式调用"
+      },
+      {
+        "keyword": "决策",
+        "matched_skills": ["core-mental-model-engine", "pipeline-s5-architecture-design"],
+        "priority_order": ["core-mental-model-engine(L0,priority=0)", "pipeline-s5-architecture-design(L1,priority=1)"],
+        "resolution": "core-mental-model-engine提供推理基础;pipeline-s5在架构决策节点处调用"
+      },
+      {
+        "keyword": "分析",
+        "matched_skills": ["core-mental-model-engine", "core-domain-classifier"],
+        "priority_order": ["core-mental-model-engine(L0,priority=0)", "core-domain-classifier(L0,priority=0)"],
+        "resolution": "同层L0，按具体语境区分：'领域分析'→core-domain-classifier，'推理分析'→core-mental-model-engine"
+      },
+      {
+        "keyword": "异常",
+        "matched_skills": ["protocol-error-handling", "protocol-data-security"],
+        "priority_order": ["protocol-error-handling(L2,priority=2)", "protocol-data-security(L2,priority=2)"],
+        "resolution": "同层L2，按语境区分：'处理异常/回退/降级'→protocol-error-handling，'数据安全异常/泄露'→protocol-data-security；若两者同时触发，protocol-data-security优先（安全优先原则）"
+      },
+      {
+        "keyword": "数据",
+        "matched_skills": ["protocol-data-security", "pipeline-s6-toolchain-matching"],
+        "priority_order": ["protocol-data-security(L2,priority=2)", "pipeline-s6-toolchain-matching(L1,priority=1)"],
+        "resolution": "pipeline-s6在工具链匹配时调用protocol-data-security进行安全评估;'数据安全'关键词→protocol-data-security直接激活"
+      }
+    ],
+    "mutual_exclusion_rules": [
+      {
+        "rule": "core-mental-model-engine为全程内化运行，不与任何Skill互斥，但不可替代流程层Skill的调用",
+        "rationale": "心智模型是推理基础设施，其他Skill在其基础上执行"
+      },
+      {
+        "rule": "protocol-error-handling和protocol-data-security在'异常'场景下不互斥，可同时激活；安全场景下protocol-data-security优先",
+        "rationale": "错误处理和数据安全是不同维度，但安全优先"
+      }
+    ]
+  }
+}

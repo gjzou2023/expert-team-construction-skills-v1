@@ -1,0 +1,191 @@
+{
+  "id": "protocol-error-handling",
+  "layer": "L2",
+  "name_zh": "异常处理与降级协议",
+  "name_en": "Error Handling Protocol",
+  "version": "1.1.0",
+  "description": "8类失败模式识别→预设降级策略→决策快照→通知→必要时人工审批。包含状态管理与回滚。",
+  "trigger_keywords": [
+    "失败",
+    "异常",
+    "降级",
+    "回滚",
+    "错误",
+    "工具不可用"
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "failure_type": {
+        "type": "string",
+        "enum": [
+          "accuracy",
+          "upstream_downstream",
+          "tool_unavailable",
+          "vague_input",
+          "quality_fluctuation",
+          "compliance_violation",
+          "ai_self_error",
+          "platform_execution"
+        ]
+      },
+      "context": {
+        "type": "string"
+      },
+      "severity": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high",
+          "critical"
+        ]
+      }
+    },
+    "required": [
+      "failure_type",
+      "context",
+      "severity"
+    ]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "degradation_action": {
+        "type": "string"
+      },
+      "decision_snapshot": {
+        "type": "object"
+      },
+      "notification_targets": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "human_approval_required": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "degradation_action",
+      "decision_snapshot",
+      "notification_targets",
+      "human_approval_required"
+    ]
+  },
+  "tool_declarations": [],
+  "few_shot_examples": [
+    {
+      "name": "正常流程",
+      "input": {
+        "user_input": "小红书内容团队要从选题到发布形成稳定流程",
+        "context": {
+          "domain_type": "A",
+          "platform": "workbuddy"
+        }
+      },
+      "output": {
+        "status": "completed",
+        "decision": "异常处理与降级协议已按A型内容传播场景执行",
+        "next_action": "进入下一阶段或触发质量门控"
+      }
+    },
+    {
+      "name": "边界/异常",
+      "input": {
+        "user_input": "我们做医疗科普，但想尽量直接承诺效果",
+        "context": {
+          "domain_type": "A",
+          "regulated": true
+        }
+      },
+      "output": {
+        "status": "blocked_or_review",
+        "risk": "强监管合规风险",
+        "required_call": "protocol-compliance-engine"
+      }
+    },
+    {
+      "name": "快速通道变体",
+      "input": {
+        "user_input": "只有我一个人，先要一个能用的提示词版客服助手",
+        "context": {
+          "role_count": 1,
+          "deliverable_count": 2,
+          "channel": "fast"
+        }
+      },
+      "output": {
+        "status": "simplified",
+        "strategy": "保留核心交付物与兜底方案，跳过或内联低风险阶段"
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {
+      "type": "static",
+      "path": "file://error-handling/eight-failure-modes",
+      "description": "8类失败模式定义与降级策略"
+    },
+    {
+      "type": "dynamic",
+      "path": "file://runtime/protocol-error-handling/state",
+      "description": "运行时状态、用户确认和阶段快照"
+    },
+    {
+      "type": "rag",
+      "path": "file://rag/protocol-error-handling/references",
+      "description": "向量检索：源文档、平台规则和历史案例"
+    }
+  ],
+  "dependencies": [
+    "core-mental-model-engine",
+    "core-state-management-engine"
+  ],
+  "execution_logic": "(1)失败模式识别(8类)→(2)按类型执行预设降级策略→(3)记录决策快照→(4)通知相关角色→(5)必要时触发人工审批。8类失败模式：(1)准确性(2)上下游断裂(3)工具不可用(4)输入模糊(5)质量波动(6)合规违规(7)AI自错(8)平台执行失败。状态管理与回滚：决策快照;回滚触发(数据异常/合规违规/用户主动);平台变更回滚;前置确认线。回退触发词：等等/我想改/不对/重新想想→暂停→识别修改→影响评估→确认→同步更新。上下文压缩：对话>40轮→快照压缩。",
+  "cascading_calls": [
+    "core-mental-model-engine",
+    "core-state-management-engine"
+  ],
+  "context_inheritance": [
+    "current_stage_outputs",
+    "domain_type"
+  ],
+  "shared_memory_keys": [
+    "protocol-error-handling_state"
+  ],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "同层或下层可调用",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过回退协议",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "trigger": "before_output",
+        "call": "self.execute_10_checks",
+        "timing": "before_output"
+      },
+      {
+        "callee": "protocol-quality-gate",
+        "when": "阶段结束或产出方案前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+      }
+    ]
+  },
+  "compatibility": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "priority": 2,
+  "trigger_conflicts": [
+    {
+      "keyword": "异常",
+      "prefer": "protocol-data-security",
+      "when": "异常主题是数据泄露、敏感数据或第三方流向"
+    }
+  ]
+}

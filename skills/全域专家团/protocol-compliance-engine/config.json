@@ -1,0 +1,192 @@
+{
+  "id": "protocol-compliance-engine",
+  "layer": "L2",
+  "name_zh": "合规协议引擎",
+  "name_en": "Compliance Engine",
+  "version": "1.4.0",
+  "description": "按领域类型和监管等级激活合规子协议，执行4级合规审查(法规>平台>服务>品牌)，输出合规审查报告。与protocol-quality-gate的5.3合规层联动。分四模块条件激活：(1)4.1内容合规(2)4.2行业专项(3)4.3合规审查流程(4)4.4强监管协议(5)4.5违规应急。风险三级分流：🟢绿灯/🟡黄灯/🔴红灯。",
+  "trigger_keywords": [
+    "合规",
+    "审查",
+    "违规",
+    "禁用词",
+    "导流",
+    "监管",
+    "发布"
+  ],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "content": {
+        "type": "string",
+        "description": "待审查内容"
+      },
+      "domain_type": {
+        "type": "string",
+        "enum": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F"
+        ]
+      },
+      "target_platform": {
+        "type": "string"
+      },
+      "industry_regulations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "content",
+      "domain_type",
+      "target_platform"
+    ]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "review_result": {
+        "type": "string",
+        "enum": [
+          "green",
+          "yellow",
+          "red"
+        ]
+      },
+      "details": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "action_required": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "review_result",
+      "details",
+      "action_required"
+    ]
+  },
+  "tool_declarations": [
+    {
+      "name": "web_search",
+      "purpose": "搜索目标平台最新合规规则",
+      "required": false
+    }
+  ],
+  "few_shot_examples": [
+    {
+      "name": "正常流程",
+      "input": {
+        "user_input": "小红书内容团队要从选题到发布形成稳定流程",
+        "context": {
+          "domain_type": "A",
+          "platform": "workbuddy"
+        }
+      },
+      "output": {
+        "status": "completed",
+        "decision": "合规协议引擎已按A型内容传播场景执行",
+        "next_action": "进入下一阶段或触发质量门控"
+      }
+    },
+    {
+      "name": "边界/异常",
+      "input": {
+        "user_input": "我们做医疗科普，但想尽量直接承诺效果",
+        "context": {
+          "domain_type": "A",
+          "regulated": true
+        }
+      },
+      "output": {
+        "status": "blocked_or_review",
+        "risk": "强监管合规风险",
+        "required_call": "protocol-compliance-engine"
+      }
+    },
+    {
+      "name": "快速通道变体",
+      "input": {
+        "user_input": "只有我一个人，先要一个能用的提示词版客服助手",
+        "context": {
+          "role_count": 1,
+          "deliverable_count": 2,
+          "channel": "fast"
+        }
+      },
+      "output": {
+        "status": "simplified",
+        "strategy": "保留核心交付物与兜底方案，跳过或内联低风险阶段"
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {
+      "type": "static",
+      "path": "file://compliance/checklist-10-items",
+      "description": "10项合规检查清单"
+    },
+    {
+      "type": "dynamic",
+      "path": "file://compliance/platform-latest-rules",
+      "description": "目标平台最新规则(搜索获取)"
+    },
+    {
+      "type": "rag",
+      "path": "file://rag/protocol-compliance-engine/references",
+      "description": "向量检索：源文档、平台规则和历史案例"
+    }
+  ],
+  "dependencies": [
+    "core-mental-model-engine"
+  ],
+  "execution_logic": "分四模块条件激活：(1)4.1内容合规:按目标平台规则检查导流/绝对化用语/虚假宣传→(2)4.2行业专项:按行业类型激活对应法规(医疗/金融/法律/教育)→(3)4.3合规审查流程:三阶段(发布前/发布中/发布后)→(4)4.4强监管协议:强制信息来源标注+禁用词+免责声明→(5)4.5违规应急:5种场景响应。10项检查清单(§4.3)：0.最新规则验证;1.导流信息;2.绝对化用语;3.未核实引用;4.风险提示缺失;5.虚假宣传;6.侵权风险;7.CTA合规;8.资质标注;9.国际法规。风险三级分流：🟢绿灯→可直接发布;🟡黄灯→标注风险+替代方案+人工确认;🔴红灯→必须修改→重审。强监管禁用词下限：低复杂度≥3个;高复杂度/强监管≥8个。合规知识来源三种工具状态：有搜索工具且成功→使用最新规则;有工具但失败/无工具→静态清单+⚡标注+全🟢降级为🟡。",
+  "cascading_calls": [
+    "core-mental-model-engine"
+  ],
+  "context_inheritance": [
+    "current_stage_outputs",
+    "domain_type"
+  ],
+  "shared_memory_keys": [
+    "protocol-compliance-engine_state"
+  ],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "同层或下层可调用",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过回退协议",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "trigger": "before_output",
+        "call": "self.execute_10_checks",
+        "timing": "before_output"
+      },
+      {
+        "callee": "protocol-quality-gate",
+        "when": "阶段结束或产出方案前",
+        "reason": "Doc1 CROSS_SKILL_PROTOCOL: ANY_SKILL -> SK-001"
+      }
+    ]
+  },
+  "compatibility": {
+    "min_compatible": "1.1.0",
+    "breaking_change": "2.0.0"
+  },
+  "priority": 2
+}

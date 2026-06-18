@@ -1,0 +1,143 @@
+{
+  "id": "protocol-early-termination",
+  "layer": "L2",
+  "name_zh": "紧急终止协议",
+  "name_en": "Early Termination Protocol",
+  "version": "1.1.0",
+  "description": "用户可随时要求跳到输出，收集已完成阶段输出+用快速模式最小输出填充未完成阶段，标记紧急终止。",
+  "trigger_keywords": ["够了", "直接给我", "跳过这些", "我只要结果", "不要了"],
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "current_stage": {"type": "string", "description": "当前所处阶段"},
+      "completed_outputs": {"type": "object", "description": "已完成阶段的所有输出"},
+      "termination_signal": {"type": "string", "description": "用户的终止信号原文"}
+    },
+    "required": ["current_stage", "completed_outputs"]
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "early_termination_report": {"type": "object"},
+      "filled_outputs": {"type": "object"},
+      "compliance_holds": {"type": "array", "description": "仍需人工审批的合规项目列表(4.4人工审批不可跳过)"}
+    },
+    "required": ["early_termination_report", "filled_outputs", "compliance_holds"]
+  },
+  "tool_declarations": [],
+  "few_shot_examples": [
+    {
+      "name": "正常触发 - S4阶段紧急终止",
+      "input": {
+        "current_stage": "S4",
+        "completed_outputs": {
+          "s1_outputs": {"core_need": "自动化美食探店内容生产"},
+          "s2_outputs": {"confirmed_domain": "A"},
+          "s3_outputs": {"chain_nodes": ["选题→创作→审核→发布"]}
+        },
+        "termination_signal": "够了，直接给我结果"
+      },
+      "output": {
+        "early_termination_report": {
+          "terminated_at": "S4",
+          "completed_stages": ["S1", "S2", "S3"],
+          "skipped_stages": ["S4", "S5", "S6", "S7"],
+          "reason": "用户主动请求紧急终止"
+        },
+        "filled_outputs": {
+          "s4_outputs": {"deliverables": "[快速通道自动生成]基于S3链路的默认交付物清单"},
+          "s5_outputs": {"roles": "[快速通道自动生成]基于A型默认角色集", "sop": "[快速通道自动生成]A型5阶段SOP模板"},
+          "s6_outputs": {"tool_matrix": "[快速通道自动生成]基于角色的默认工具"},
+          "s7_outputs": {"expert_package": "[快速通道自动生成]精简专家包"}
+        },
+        "compliance_holds": []
+      }
+    },
+    {
+      "name": "合规hold - 强监管场景紧急终止",
+      "input": {
+        "current_stage": "S6",
+        "completed_outputs": {
+          "s1_outputs": {"core_need": "医疗科普内容自动化"},
+          "s2_outputs": {"confirmed_domain": "A", "compliance_activation_map": {"4.4": {"level": "mandatory"}}}
+        },
+        "termination_signal": "不要了，直接出结果"
+      },
+      "output": {
+        "early_termination_report": {
+          "terminated_at": "S6",
+          "completed_stages": ["S1", "S2"],
+          "skipped_stages": ["S3", "S4", "S5", "S6", "S7"],
+          "reason": "用户主动请求紧急终止",
+          "compliance_warning": "强监管领域，4.4人工审批不可跳过"
+        },
+        "filled_outputs": {
+          "s3_outputs": {"chain_nodes": "[快速通道自动生成]A型默认链路"},
+          "s4_outputs": {"deliverables": "[快速通道自动生成]A型默认交付物"},
+          "s5_outputs": {"roles": "[快速通道自动生成]医疗科普默认角色"},
+          "s6_outputs": {"tool_matrix": "[快速通道自动生成]默认工具链"},
+          "s7_outputs": {"expert_package": "[快速通道自动生成]精简专家包"}
+        },
+        "compliance_holds": [
+          {"rule": "4.4人工审批", "reason": "强监管领域mandatory级别，紧急终止不可跳过", "action_required": "输出前必须完成人工审批"}
+        ]
+      }
+    },
+    {
+      "name": "降级填充 - 快速通道场景紧急终止",
+      "input": {
+        "current_stage": "S2",
+        "completed_outputs": {
+          "s1_outputs": {"core_need": "单人财税科普号", "team_size": 1}
+        },
+        "termination_signal": "跳过这些，我只要结果"
+      },
+      "output": {
+        "early_termination_report": {
+          "terminated_at": "S2",
+          "completed_stages": ["S1"],
+          "skipped_stages": ["S2", "S3", "S4", "S5", "S6", "S7"],
+          "reason": "用户主动请求紧急终止",
+          "channel": "fast"
+        },
+        "filled_outputs": {
+          "s2_outputs": {"confirmed_domain": "A", "compliance_activation_map": {"4.1": {"level": "warning"}}},
+          "s3_outputs": {"chain_nodes": "[快速通道自动生成]选题→创作→发布"},
+          "s4_outputs": {"deliverables": "[快速通道自动生成]可直接发布成品"},
+          "s5_outputs": {"roles": "[快速通道自动生成]单人solo-operator", "sop": "[快速通道自动生成]daily"},
+          "s6_outputs": {"tool_matrix": "[快速通道自动生成]纯提示词模式"},
+          "s7_outputs": {"expert_package": "[快速通道自动生成]单Agent提示词版专家包"}
+        },
+        "compliance_holds": []
+      }
+    }
+  ],
+  "knowledge_base_mount_points": [
+    {"type": "static", "path": "file://./knowledge/early-termination-rules.md", "description": "紧急终止规则"},
+    {"type": "dynamic", "path": "file://./knowledge/early-termination-state.json", "description": "紧急终止运行时状态"}
+  ],
+  "dependencies": ["core-mental-model-engine", "core-state-management-engine"],
+  "execution_logic": "(1)检测用户终止信号→(2)收集当前已完成阶段的所有输出→(3)对未完成阶段用'快速模式最小输出'填充→(4)检查合规约束(4.4人工审批不可跳过)→(5)在最终输出中标记'【紧急终止模式】以下内容为AI基于有限信息生成，建议后续补充完善'。",
+  "cascading_calls": ["core-mental-model-engine", "core-state-management-engine"],
+  "context_inheritance": ["all_stage_outputs"],
+  "shared_memory_keys": ["early_termination_state"],
+  "protocol": {
+    "cascading_enabled": true,
+    "context_inheritance_enabled": true,
+    "shared_memory_enabled": true,
+    "cascade_direction": "同层或下层可调用",
+    "data_passing_format": "JSON-compatible",
+    "immutability_rule": "上游产出一经确认，下游不得擅自修改，需通过回退协议",
+    "traceability": "每个字段标注来源阶段和Skill",
+    "mandatory_calls": [
+      {
+        "callee": "core-state-management-engine",
+        "when": "终止信号检测后",
+        "reason": "通知状态管理引擎暂停推进并记录终止点"
+      }
+    ]
+  },
+  "compatibility": {"min_compatible": "1.1.0", "breaking_change": "2.0.0"},
+  "priority": 2,
+  "stage_guard": null
+}

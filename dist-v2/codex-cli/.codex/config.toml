@@ -1,0 +1,5 @@
+# Codex CLI 配置
+agent_max_depth = 3
+
+# 编码设置
+encoding = "utf-8"
