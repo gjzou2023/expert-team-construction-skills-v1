@@ -1,3 +1,15 @@
+---
+name: platform-comfyui-adapter
+id: "platform-comfyui-adapter"
+layer: "L3"
+name_zh: "ComfyUI多模态生成适配器"
+name_en: "ComfyUI Adapter"
+version: "1.0.0"
+description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：ComfyUI可用→完整自动化;不可用→手动+参数快照;无任何工具→纯描述+占位。
+agent_created: true
+trigger_keywords: ["platform-comfyui-adapter", "ComfyUI适配器", "L3-ComfyUI"]
+dependencies: ["pipeline-s7-expert-package-generation"]
+---
 
 # ComfyUI多模态生成适配器 (ComfyUI Adapter)
 
@@ -94,7 +106,7 @@
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": true
   },
@@ -131,7 +143,7 @@
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": false
   },
@@ -159,7 +171,7 @@
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "no_visual_tools": true
   },
@@ -189,6 +201,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-comfyui-adapter/format-spec` — ComfyUI多模态生成适配器格式规范
 
 ## 依赖关系

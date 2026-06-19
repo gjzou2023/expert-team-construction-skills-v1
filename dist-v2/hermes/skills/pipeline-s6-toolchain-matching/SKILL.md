@@ -1,21 +1,19 @@
 ---
 name: pipeline-s6-toolchain-matching
-description: 从角色能力需求匹配工具，评估可用性，为不可用工具设计纯提示词兜底，工具数据安全评估。所有工具必须有纯提示词兜底方案。 Use when: 用户说"S6执行、工具链匹配、MCP配置、提示词兜底、数据安全评估"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l1]
-    related_skills: []
-    requires_toolsets: []
+id: "pipeline-s6-toolchain-matching"
+layer: "L1"
+name_zh: "阶段六：工具链匹配"
+name_en: "Stage 6: Toolchain Matching"
+version: "1.1.0"
+description: 从角色能力需求匹配工具，评估可用性，为不可用工具设计纯提示词兜底，工具数据安全评估。所有工具必须有纯提示词兜底方案。
+agent_created: true
+trigger_keywords: ["S6执行", "工具链匹配", "MCP配置", "提示词兜底", "数据安全评估"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-# 阶段六：工具链匹配
-
-> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s6-toolchain-matching` | **中文名**: 阶段六：工具链匹配 | **英文名**: Stage 6: Toolchain Matching
 # 阶段六：工具链匹配 (Stage 6: Toolchain Matching)
 
-> **层级**: L1 | **版本**: 1.0.0 | **ID**: `pipeline-s6-toolchain-matching`
+> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s6-toolchain-matching`
 > **编排关系**: 本skill由 `team-orchestrator` 自动加载执行，用户不应直接触发。承接 `pipeline-s5-architecture-design` 的输出，完成后自动衔接 `pipeline-s7-expert-package-generation`。
 
 ## 概述
@@ -225,6 +223,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://pipeline/stage-6-rules` — 阶段6执行规则
 - **[dynamic]** `file://pipeline/stage-6-state` — 阶段6运行时状态
 

@@ -1,18 +1,21 @@
 ---
 name: pipeline-s7-expert-package-generation
-description: 生成专家包概览、按目标平台格式生成配置、嵌入全局机制、生成执行计划、四步确认门。v1.4.0新增快速通道字段回填机制、展示格式弹性规则，整合确认步骤。字段追踪强 Use when: 用户说"S7执行、专家包生成、四步确认门、平台配置生成、专家包导出"等触发词。
-version: 1.4.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l1]
-    related_skills: []
-    requires_toolsets: []
+id: "pipeline-s7-expert-package-generation"
+layer: "L1"
+name_zh: "阶段七：专家包生成"
+name_en: "Stage 7: Expert Package Generation"
+version: "1.4.0"
+description: 生成专家包概览、按目标平台格式生成配置、嵌入全局机制、生成执行计划、四步确认门。v1.4.0新增快速通道字段回填机制、展示格式弹性规则，整合确认步骤。字段追踪强制。按需条件激活L2协议和L3适配器。
+agent_created: true
+trigger_keywords: ["S7执行", "专家包生成", "四步确认门", "平台配置生成", "专家包导出"]
+dependencies: ["core-mental-model-engine", "core-deliverable-backward-engine"]
+conditional_dependencies: {
+  "说明": "I-2.9修复: L2协议和L3适配器根据activation_context按需激活，不在depends_on中硬声明。activation_map定义在外部knowledge/protocol-activation-map.json。",
+  "L2_protocol_activation": "按外部knowledge/protocol-activation-map.json的domain_type和compliance_activation_map条件激活",
+  "L3_adapter_activation": "仅激活platform对应的单个L3适配器"
+}
 ---
 
-# 阶段七：专家包生成
-
-> **层级**: L1 | **版本**: 1.4.0 | **ID**: `pipeline-s7-expert-package-generation` | **中文名**: 阶段七：专家包生成 | **英文名**: Stage 7: Expert Package Generation
 # 阶段七：专家包生成 (Stage 7: Expert Package Generation)
 
 > **层级**: L1 | **版本**: 1.4.0 | **ID**: `pipeline-s7-expert-package-generation`
@@ -20,11 +23,11 @@ metadata:
 
 ## 概述
 
-生成专家包概览、按目标平台格式生成配置、嵌入全局机制、生成执行计划、最终确认三步门。v1.3.0新增专家团组建可视化确认步骤。字段追踪强制。
+生成专家包概览、按目标平台格式生成配置、嵌入全局机制、生成执行计划、最终确认四步确认门。v1.3.0新增专家团组建可视化确认步骤。字段追踪强制。
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：专家包, 生成, 打包, 确认, 三步门, 导出
+当检测到以下关键词或场景时自动激活：专家包, 生成, 打包, 确认, 四步确认门, 导出
 
 ## 输入规范 (input_schema)
 
@@ -375,6 +378,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/stage-7-rules.md` — 阶段7执行规则
 - **[static]** `file://./knowledge/protocol-activation-map.json` — L2协议激活映射矩阵（I-2.9新增外部化）
 - **[dynamic]** `file://./knowledge/stage-7-state.json` — 阶段7运行时状态

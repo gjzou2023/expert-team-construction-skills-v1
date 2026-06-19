@@ -1,24 +1,19 @@
 ---
 name: protocol-automation-trigger
-description: D型/F型/E型(含D/F)强制激活。定义触发类型(定时/事件/条件)，填写触发需求声明表(12必填字段)，触发间依赖编排(DAG)。快速通道跳过，纯提示词降级 Use when: 用户说"protocol-automation-trigger、自动化触发协议、L2自动化"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l2]
-    related_skills: []
-    requires_toolsets: []
+id: "protocol-automation-trigger"
+layer: "L2"
+name_zh: "自动化触发设计"
+name_en: "Automation Trigger Design"
+version: "1.1.0"
+description: D型/F型/E型(含D/F)强制激活。定义触发类型(定时/事件/条件)，填写触发需求声明表(12必填字段)，触发间依赖编排(DAG)。快速通道跳过，纯提示词降级
+agent_created: true
+trigger_keywords: ["protocol-automation-trigger", "自动化触发协议", "L2自动化"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L2` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 自动化触发设计
-
-> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-automation-trigger` | **中文名**: 自动化触发设计 | **英文名**: Automation Trigger Design
 # 自动化触发设计 (Automation Trigger Design)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-automation-trigger`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-automation-trigger`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -207,6 +202,8 @@ D型/F型/E型(含D/F)强制激活。定义触发类型(定时/事件/条件)，
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://automation/platform-scheduling-map` — 各平台调度能力映射
 
 ## 依赖关系
@@ -227,16 +224,17 @@ D型/F型/E型(含D/F)强制激活。定义触发类型(定时/事件/条件)，
 
 ```text
 FUNCTION execute_protocol_automation_trigger(input):
-    ASSERT input.domain_type IN ["A","B","C","D","E","F"]
+    ASSERT input.domain_type IN ["A","B","C","D","F"]  # E型已改为A-F组合标记
     ASSERT input.platform IS NOT EMPTY
 
     // === 第一步：触发类型识别与强制激活判断 ===
     FORCE_ACTIVATE_TYPES = ["D","F"]  // D型/F型强制激活
-    IF input.domain_type == "E":
-        // E型含D/F子类型时强制激活
-        sub_types = IDENTIFY_SUB_TYPES(input)
-        IF "D" IN sub_types OR "F" IN sub_types:
-            FORCE_ACTIVATE_TYPES = FORCE_ACTIVATE_TYPES + ["E"]
+    // 混合型场景（原E型）通过domain_profile.secondary_domains判断
+    IF input.domain_profile EXISTS AND LENGTH(input.domain_profile.secondary_domains) > 0:
+        // 含D/F子类型时强制激活
+        all_types = [input.domain_type] + input.domain_profile.secondary_domains
+        IF "D" IN all_types OR "F" IN all_types:
+            FORCE_ACTIVATE_TYPES = FORCE_ACTIVATE_TYPES + all_types
 
     is_force_activate = input.domain_type IN FORCE_ACTIVATE_TYPES
 
@@ -338,7 +336,7 @@ FUNCTION execute_protocol_automation_trigger(input):
     ASSERT trigger_dag IS NOT EMPTY
     ASSERT platform_adaptation IS NOT EMPTY
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {triggers, trigger_dag, platform_adaptation, monitoring_metrics}
 ```
 

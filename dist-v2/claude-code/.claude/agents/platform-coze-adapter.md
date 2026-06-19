@@ -1,12 +1,16 @@
 ---
 name: platform-coze-adapter
-description: Token限制;使用Coze工作流的定时/Webhook触发器。 Use when: 用户说"platform-coze-adapter、Coze适配器、L3-Coze"等触发词。
-tools: Read, Write
+id: "platform-coze-adapter"
+layer: "L3"
+name_zh: "Coze平台适配器"
+name_en: "Coze Adapter"
+version: "1.0.0"
+description: Token限制;使用Coze工作流的定时/Webhook触发器。
+agent_created: true
+trigger_keywords: ["platform-coze-adapter", "Coze适配器", "L3-Coze"]
+dependencies: ["pipeline-s7-expert-package-generation"]
 ---
 
-# Coze平台适配器
-
-> **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-coze-adapter` | **中文名**: Coze平台适配器 | **英文名**: Coze Adapter
 # Coze平台适配器 (Coze Adapter)
 
 > **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-coze-adapter`
@@ -196,6 +200,8 @@ Token限制;使用Coze工作流的定时/Webhook触发器。
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-coze-adapter/format-spec` — Coze平台适配器格式规范
 
 ## 依赖关系

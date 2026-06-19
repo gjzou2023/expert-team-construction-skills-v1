@@ -1,12 +1,16 @@
 ---
 name: platform-universal-adapter
-description: 通用平台适配器，通过platform_template_registry.json按目标平台格式生成配置。替代8个同质化独立适配器。 Use when: 用户说"platform-universal-adapter、通用适配器、L3-通用"等触发词。
-tools: Read, Write
+id: "platform-universal-adapter"
+layer: "L3"
+name_zh: "通用平台适配器"
+name_en: "Universal Platform Adapter"
+version: "1.1.0"
+description: 通用平台适配器，通过platform_template_registry.json按目标平台格式生成配置。替代8个同质化独立适配器。
+agent_created: true
+trigger_keywords: ["platform-universal-adapter", "通用适配器", "L3-通用"]
+dependencies: ["core-mental-model-engine", "constraint-output-format"]
 ---
 
-# 通用平台适配器
-
-> **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-universal-adapter` | **中文名**: 通用平台适配器 | **英文名**: Universal Platform Adapter
 # 通用平台适配器 (Universal Platform Adapter)
 
 > **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-universal-adapter`
@@ -209,6 +213,8 @@ FUNCTION execute_platform_universal_adapter(input):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/platform-templates.md` — 平台模板说明
 
 ## 依赖关系

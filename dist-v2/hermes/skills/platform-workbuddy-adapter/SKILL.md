@@ -1,21 +1,16 @@
 ---
 name: platform-workbuddy-adapter
-description: 生成.workbuddy-plugin/plugin.json+agents/*.md+avatars+settings.json(Team型)。Agent I Use when: 用户说"platform-workbuddy-adapter、WorkBuddy适配器、L3-WB"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l3]
-    related_skills: []
-    requires_toolsets: []
+id: "platform-workbuddy-adapter"
+layer: "L3"
+name_zh: "WorkBuddy平台适配器"
+name_en: "WorkBuddy Adapter"
+version: "1.1.0"
+description: 生成.workbuddy-plugin/plugin.json+agents/*.md+avatars+settings.json(Team型)。Agent ID必须kebab-case，花名2-3字正常人名风格，profession禁止通用title(团长/主理人)，categoryId从标准列表选择，tags恰好3个(中英文)，quickPrompts恰好3个(中英文,第一条=defaultInitPrompt)，displayDescription中文40-50字。Team型使用teamInfo.leadAgent+memberAgents，主理人用spawn+SendMessage编排，§5.9定时触发使用WorkBuddy Automation功能。
+agent_created: true
+trigger_keywords: ["platform-workbuddy-adapter", "WorkBuddy适配器", "L3-WB"]
+dependencies: ["pipeline-s7-expert-package-generation"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L3` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# WorkBuddy平台适配器
-
-> **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-workbuddy-adapter` | **中文名**: WorkBuddy平台适配器 | **英文名**: WorkBuddy Adapter
 # WorkBuddy平台适配器 (WorkBuddy Adapter)
 
 > **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-workbuddy-adapter`
@@ -207,6 +202,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-workbuddy-adapter/format-spec` — WorkBuddy平台适配器格式规范
 
 ## 依赖关系

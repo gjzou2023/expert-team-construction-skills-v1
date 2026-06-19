@@ -1,3 +1,15 @@
+---
+name: constraint-tool-integration
+id: "constraint-tool-integration"
+layer: "L4"
+name_zh: "工具集成规范"
+name_en: "Tool Integration Standard"
+version: "1.0.0"
+description: MCP Server配置模板→健康检查机制→超时/重试策略→降级决策树→成本监控→安全校验。
+agent_created: true
+trigger_keywords: ["constraint-tool-integration", "工具集成约束", "L4工具"]
+dependencies: []
+---
 
 # 工具集成规范 (Tool Integration Standard)
 
@@ -10,7 +22,7 @@ MCP Server配置模板→健康检查机制→超时/重试策略→降级决策
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：规则, 约束, 强制, 规范, 命名
+当检测到以下关键词或场景时自动激活：工具集成约束, L4工具, MCP配置降级决策树
 
 ## 输入规范 (input_schema)
 
@@ -170,6 +182,8 @@ MCP Server配置模板→健康检查机制→超时/重试策略→降级决策
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://constraints/constraint-tool-integration` — 工具集成规范完整规则集
 
 ## 依赖关系

@@ -1,3 +1,15 @@
+---
+name: core-mental-model-engine
+id: "core-mental-model-engine"
+layer: "L0"
+name_zh: "思维框架引擎"
+name_en: "Mental Model Engine"
+version: "1.4.0"
+description: 根据当前决策场景，从18个心智模型中选择匹配模型，输出结构化推理链。v1.4.0场景映射扩展至9场景(user_interaction/industry_adaptation/conflict_resolution)。全程内化运行，不向用户解释模型本身。
+agent_created: true
+trigger_keywords: ["core-mental-model-engine", "心智模型引擎", "L0推理引擎"]
+dependencies: []
+---
 
 # 思维框架引擎 (Mental Model Engine)
 
@@ -234,6 +246,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://mental-models/18-models-definitions` — 18心智模型定义与激活映射表
 - **[static]** `file://mental-models/failure-modes` — 8类失败模式预枚举
 - **[dynamic]** `file://stage-context/current-decisions` — 当前阶段决策上下文
@@ -443,7 +457,7 @@ FUNCTION execute_core_mental_model_engine(input):
 
     # 强制调用：质量门控（仅在产出方案前）
     IF result.confidence IN ["low", "medium"]:
-        CALL protocol-quality-gate FOR review
+        // 质量门控由编排器统一调用（避免递归）
 
     # 构建输出
     BUILD output ACCORDING TO output_schema WITH result

@@ -8,7 +8,7 @@ description: 8类失败模式识别→预设降级策略→决策快照→通知
 > **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-error-handling` | **中文名**: 异常处理与降级协议 | **英文名**: Error Handling Protocol
 # 异常处理与降级协议 (Error Handling Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-error-handling`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-error-handling`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -188,6 +188,8 @@ description: 8类失败模式识别→预设降级策略→决策快照→通知
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://error-handling/eight-failure-modes` — 8类失败模式定义与降级策略
 
 ## 依赖关系
@@ -354,7 +356,7 @@ FUNCTION execute_protocol_error_handling(input):
     ASSERT degradation_action IS NOT EMPTY
     ASSERT decision_snapshot IS NOT EMPTY
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {degradation_action, decision_snapshot, notification_targets, human_approval_required}
 ```
 

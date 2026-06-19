@@ -1,60 +1,23 @@
 ---
 name: team-orchestrator
-description: 全域专家团构建skills系统统一入口编排器。用户只需触发此skill一次，系统自动按S1需求深潜→S2领域消歧→S3链路拆解→S4交付物锚定→S5架构设计→S Use when: 用户说"开始、帮我建、我想做、专家团、需求、刚开始"等触发词。
-tools: Task, Read, Write, Glob
+description: 全域专家团构建skills系统统一入口编排器。用户只需触发此skill一次，系统自动按S1需求深潜→S2领域消歧→S3链路拆解→S4交付物锚定→S5架构设计→S6工具链匹配→S7专家包生成→S8平台执行的顺序执行全流程，L0/L2/L3/L4层skill按需自动激活，用户无需感知底层39个子skill（不含本编排器）的存在。
+agent_created: true
+id: "team-orchestrator"
+layer: "L-Meta"
+name_zh: "全域专家团总编排器"
+name_en: "Team Orchestrator"
+version: "1.0.0"
+trigger_keywords: ["开始", "帮我建", "我想做", "专家团", "需求", "刚开始", "构建专家", "建个AI", "AI专家", "全域专家团", "构建团队", "帮我构建", "想要构建"]
+dependencies: ["pipeline-s1-need-diving", "pipeline-s2-domain-disambiguation", "pipeline-s3-chain-decomposition", "pipeline-s4-deliverable-anchoring", "pipeline-s5-architecture-design", "pipeline-s6-toolchain-matching", "pipeline-s7-expert-package-generation", "pipeline-s8-platform-execution"]
 ---
 
-你是全域专家团总编排器。当用户表达构建专家团的意图时，按以下顺序使用 Task 工具调用子 agent：
-
-## 执行流程
-
-每个阶段使用 Task 工具调用对应的子 agent。子 agent 的完整指令见其 .md 文件。
-
-### 阶段1：需求深潜
-```
-使用 Task 工具调用 pipeline-s1-need-diving 子 agent，提示词："执行需求深潜，采集用户需求画像。完整执行指引见 .claude/agents/pipeline-s1-need-diving.md"
-```
-收集返回的 s1_output。
-
-### 阶段2：领域消歧
-```
-基于以下 S1 输出执行领域消歧：{s1_output}
-使用 Task 工具调用 pipeline-s2-domain-disambiguation 子 agent
-```
-收集返回的 s2_output。
-
-### 阶段3-S8（同理）
-按序调用 pipeline-s3-chain-decomposition → pipeline-s4-deliverable-anchoring → pipeline-s5-architecture-design → pipeline-s6-toolchain-matching → pipeline-s7-expert-package-generation → pipeline-s8-platform-execution
-
-每个阶段的 Task 提示词中应包含前序阶段的输出摘要。
-
-## 通道路由
-
-S2 输出 domain_type（A/B/C/D/F）和 channel（fast/standard/strict）。后续阶段的 Task 提示词中根据 channel 调整执行深度。
-
-## L2 协议激活
-
-在 S7 阶段的 Task 提示词中，包含 protocol-activation-map.json 确定的激活协议检查指令。
-
-## 注意事项
-
-- 子 agent 是独立上下文，过程性噪音不回传主 agent
-- 只传结构化摘要（~500 tokens），不传完整过程
-- 保持主 agent context 精简（<30K tokens）
-
-
-你是全域专家团总编排器。当用户表达构建专家团的意图时，按以下顺序使用 Task 工具调用子 agent。
-
-> **层级**: L-Meta | **版本**: 1.0.0 | **ID**: `team-orchestrator` | **中文名**: 全域专家团总编排器 | **英文名**: Team Orchestrator
-# 全域专家团总编排器
-
-你是全域专家团总编排器。当用户表达构建专家团的意图时，按以下顺序使用 Task 工具调用子 agent。 (Team Orchestrator)
+# 全域专家团总编排器 (Team Orchestrator)
 
 > **层级**: L-Meta (元编排层) | **版本**: 1.0.0 | **ID**: `team-orchestrator`
 
 ## 概述
 
-本skill是全域专家团构建skills系统的**唯一入口**。用户只需说"帮我建个AI专家团"等触发词，系统自动启动完整的8阶段构建流程。所有39个子skill（L0核心引擎×6 + L1流程×8 + L2协议×11 + L3适配器×9 + L4约束×5）由本编排器根据任务上下文自动激活和调用，用户无需感知底层skill的存在，无需手动触发任何子skill。
+本skill是全域专家团构建skills系统的**唯一入口**。用户只需说"帮我建个AI专家团"等触发词，系统自动启动完整的8阶段构建流程。所有39个子skill（不含本编排器：L0核心引擎×6 + L1流程×8 + L2协议×11 + L3适配器×9 + L4约束×5）由本编排器根据任务上下文自动激活和调用，用户无需感知底层skill的存在，无需手动触发任何子skill。
 
 ## 核心原则
 
@@ -159,7 +122,7 @@ FUNCTION execute_team_orchestrator(input):
 
     # ===== 阶段1: 需求深潜 =====
     # 自动加载并执行 pipeline-s1-need-diving
-    CALL protocol-single-question-guidance("阶段1/8: 需求深潜即将开始")
+    CALL protocol-single-question-guidance(stage="S1", question={"type":"announcement","text":"阶段1/8: 需求深潜即将开始","options":null})
     OUTPUT "--- 阶段 1/8: 需求深潜 ---" TO user
 
     LOAD_SKILL "pipeline-s1-need-diving"
@@ -175,16 +138,23 @@ FUNCTION execute_team_orchestrator(input):
         "pipeline-s1-need-diving"
     ])
 
-    # 确认节点: S1→S2
-    CALL protocol-confirmation-node(stage="S1→S2", output=s1_output)
+    # 确认节点: S1→S2 (node_id对齐protocol-confirmation-node的STRONG_CONFIRM_NODES)
+    CALL protocol-confirmation-node(node_id="stage_1_end", content=s1_output, current_stage="S1")
     CALL protocol-quality-gate(stage=1, output=s1_output)
     SNAPSHOT pipeline_state.snapshots["S1"] = s1_output
+
+    # ===== 提取target_platform（S6/S7/S8都需要，提前定义避免使用先于定义） =====
+    target_platform = s1_output.need_portrait._context.目标平台 IF EXISTS ELSE "workbuddy"
+    platform_adapter = "platform-" + target_platform + "-adapter"
+    IF target_platform == "其他" OR target_platform == null:
+        platform_adapter = "platform-universal-adapter"
 
     # ===== 阶段2: 领域分类与消歧 =====
     OUTPUT "--- 阶段 2/8: 领域分类与消歧 ---" TO user
 
     LOAD_SKILL "pipeline-s2-domain-disambiguation"
-    s2_input = {s1_output: s1_output}
+    # 字段名对齐S2 input_schema: s1_outputs(复数) + domain_suggestion(可选,S2内部生成)
+    s2_input = {"s1_outputs": s1_output, "domain_suggestion": null}
     s2_output = EXECUTE pipeline-s2-domain-disambiguation(s2_input)
     # S2内部自动调用: core-domain-classifier, protocol-confirmation-node
 
@@ -197,7 +167,7 @@ FUNCTION execute_team_orchestrator(input):
     ])
 
     # 确认节点: S2→S3
-    CALL protocol-confirmation-node(stage="S2→S3", output=s2_output)
+    CALL protocol-confirmation-node(node_id="stage_2_end", content=s2_output, current_stage="S2")
     CALL protocol-quality-gate(stage=2, output=s2_output)
     SNAPSHOT pipeline_state.snapshots["S2"] = s2_output
 
@@ -212,7 +182,38 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "--- 阶段 3/8: 链路拆解 ---" TO user
 
     LOAD_SKILL "pipeline-s3-chain-decomposition"
-    s3_input = {s2_output: s2_output, channel: channel}
+    # 字段名对齐S3 input_schema: s2_outputs(复数) + deliverable_candidates + channel + s1_context
+    # deliverable_candidates从S1需求画像和S2领域画像推导
+    deliverable_candidates = []
+    expected_outcome = s1_output.need_portrait._context.期望成果 IF EXISTS ELSE ""
+    DOMAIN_DEFAULT_DELIVERABLES = {
+        "A": ["图文笔记", "深度文章", "用户互动话术"],
+        "B": ["服务交付物", "进度报告", "验收文档"],
+        "C": ["知识条目", "检索索引", "知识更新日志"],
+        "D": ["自动化流程配置", "执行日志", "异常报告"],
+        "F": ["客服回复模板", "FAQ更新", "满意度报告"]
+    }
+    IF expected_outcome CONTAINS "图文" OR expected_outcome CONTAINS "笔记":
+        APPEND "图文笔记" TO deliverable_candidates
+    IF expected_outcome CONTAINS "文章":
+        APPEND "深度文章" TO deliverable_candidates
+    IF expected_outcome CONTAINS "视频":
+        APPEND "视频脚本" TO deliverable_candidates
+    IF expected_outcome CONTAINS "报表" OR expected_outcome CONTAINS "报告":
+        APPEND "数据报表" TO deliverable_candidates
+    IF LENGTH(deliverable_candidates) == 0:
+        deliverable_candidates = DOMAIN_DEFAULT_DELIVERABLES[pipeline_state.domain_type]
+
+    s3_input = {
+        "s2_outputs": s2_output,
+        "deliverable_candidates": deliverable_candidates,
+        "channel": channel,
+        "s1_context": {
+            "team_size": s1_output.need_portrait._context.团队规模,
+            "ai_experience": s1_output.need_portrait._context.AI经验,
+            "target_platform": s1_output.need_portrait._context.目标平台
+        }
+    }
     s3_output = EXECUTE pipeline-s3-chain-decomposition(s3_input)
     # S3内部自动调用: core-deliverable-backward-engine
 
@@ -224,7 +225,7 @@ FUNCTION execute_team_orchestrator(input):
 
     # 快速通道跳过S3→S4确认节点，直接衔接
     IF channel != "fast":
-        CALL protocol-confirmation-node(stage="S3→S4", output=s3_output)
+        CALL protocol-confirmation-node(node_id="stage_3_workflow", content=s3_output, current_stage="S3")
     CALL protocol-quality-gate(stage=3, output=s3_output)
     SNAPSHOT pipeline_state.snapshots["S3"] = s3_output
 
@@ -232,14 +233,19 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "--- 阶段 4/8: 交付物锚定 ---" TO user
 
     LOAD_SKILL "pipeline-s4-deliverable-anchoring"
-    s4_input = {s3_output: s3_output, channel: channel}
+    # 字段名对齐S4 input_schema: s3_outputs(复数) + s2_outputs(复数)
+    s4_input = {
+        "s3_outputs": s3_output,
+        "s2_outputs": s2_output,
+        "channel": channel
+    }
     s4_output = EXECUTE pipeline-s4-deliverable-anchoring(s4_input)
     # S4内部自动调用: core-deliverable-backward-engine
 
     pipeline_state.stages_completed.append("S4")
     pipeline_state.skills_activated.extend(["pipeline-s4-deliverable-anchoring"])
 
-    CALL protocol-confirmation-node(stage="S4→S5", output=s4_output)
+    CALL protocol-confirmation-node(node_id="stage_4_end", content=s4_output, current_stage="S4")
     CALL protocol-quality-gate(stage=4, output=s4_output)
     SNAPSHOT pipeline_state.snapshots["S4"] = s4_output
 
@@ -248,7 +254,12 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "--- 阶段 5/8: 架构设计 ---" TO user
 
     LOAD_SKILL "pipeline-s5-architecture-design"
-    s5_input = {s4_output: s4_output, channel: channel, domain_type: pipeline_state.domain_type}
+    # 字段名对齐S5 input_schema: s4_outputs(复数) + domain_type + channel
+    s5_input = {
+        "s4_outputs": s4_output,
+        "channel": channel,
+        "domain_type": pipeline_state.domain_type
+    }
     s5_output = EXECUTE pipeline-s5-architecture-design(s5_input)
     # S5内部自动调用: core-deliverable-backward-engine, protocol-quality-gate,
     #                  protocol-feedback-loop, protocol-compliance-engine
@@ -265,7 +276,7 @@ FUNCTION execute_team_orchestrator(input):
         OUTPUT "[系统] 检测到角色数>=4，启用团队协作模式" TO user
         pipeline_state.team_required = true
 
-    CALL protocol-confirmation-node(stage="S5→S6", output=s5_output)
+    CALL protocol-confirmation-node(node_id="stage_5_end", content=s5_output, current_stage="S5")
     CALL protocol-quality-gate(stage=5, output=s5_output)
     SNAPSHOT pipeline_state.snapshots["S5"] = s5_output
 
@@ -273,7 +284,11 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "--- 阶段 6/8: 工具链匹配 ---" TO user
 
     LOAD_SKILL "pipeline-s6-toolchain-matching"
-    s6_input = {s5_output: s5_output}
+    # 字段名对齐S6 input_schema: s5_outputs(复数) + platform
+    s6_input = {
+        "s5_outputs": s5_output,
+        "platform": target_platform
+    }
     s6_output = EXECUTE pipeline-s6-toolchain-matching(s6_input)
     # S6内部自动调用: core-mental-model-engine
     # S6对每个工具调用 protocol-data-security 进行安全评估
@@ -284,7 +299,7 @@ FUNCTION execute_team_orchestrator(input):
         "pipeline-s6-toolchain-matching"
     ])
 
-    CALL protocol-confirmation-node(stage="S6→S7", output=s6_output)
+    CALL protocol-confirmation-node(node_id="stage_6_end", content=s6_output, current_stage="S6")
     CALL protocol-quality-gate(stage=6, output=s6_output)
     SNAPSHOT pipeline_state.snapshots["S6"] = s6_output
 
@@ -301,20 +316,27 @@ FUNCTION execute_team_orchestrator(input):
     IF active_protocols == null:
         active_protocols = activation_map.protocol_activation_matrix["_fallback"]
 
-    # 确定目标平台，仅激活对应的L3适配器
-    target_platform = s1_output.need_portrait._context.目标平台
-    platform_adapter = "platform-" + target_platform + "-adapter"
-    IF target_platform == "其他" OR target_platform == null:
-        platform_adapter = "platform-universal-adapter"
+    # 确定目标平台，仅激活对应的L3适配器（target_platform和platform_adapter已在S1后提前定义）
+    # target_platform = s1_output.need_portrait._context.目标平台  ← 已提前到S1之后定义
+    # platform_adapter = "platform-" + target_platform + "-adapter"  ← 已提前到S1之后定义
+    # IF target_platform == "其他" OR target_platform == null:       ← 已提前到S1之后处理
+    #     platform_adapter = "platform-universal-adapter"
 
+    # 字段名对齐S7 input_schema: s5_outputs + s6_outputs + platform + team_type + activation_context
+    team_type = "team" IF LENGTH(s5_output.roles) >= 4 ELSE "agent"
     s7_input = {
-        s6_output: s6_output,
-        s5_output: s5_output,
-        channel: channel,
-        domain_type: pipeline_state.domain_type,
-        target_platform: target_platform,
-        active_protocols: active_protocols,
-        platform_adapter: platform_adapter
+        "s5_outputs": s5_output,
+        "s6_outputs": s6_output,
+        "platform": target_platform,
+        "team_type": team_type,
+        "activation_context": {
+            "domain_type": pipeline_state.domain_type,
+            "secondary_domains": s2_output.domain_profile.secondary_domains IF EXISTS ELSE [],
+            "market": s1_output.need_portrait._context.目标市场,
+            "platform": target_platform,
+            "is_regulated": s2_output.domain_profile.is_regulated IF EXISTS ELSE false,
+            "compliance_requirements": s2_output.compliance_activation_map
+        }
     }
     s7_output = EXECUTE pipeline-s7-expert-package-generation(s7_input)
     # S7内部按active_protocols自动激活对应L2协议
@@ -325,10 +347,10 @@ FUNCTION execute_team_orchestrator(input):
     pipeline_state.skills_activated.append(platform_adapter)
     pipeline_state.skills_activated.append("pipeline-s7-expert-package-generation")
 
-    # 知识沉淀
-    CALL protocol-knowledge-persistence(stage=7, output=s7_output)
+    # 知识沉淀 (对齐knowledge-persistence input_schema: decision_type + content + metadata)
+    CALL protocol-knowledge-persistence(decision_type="design", content=s7_output, metadata={"stage":7, "expert_team_id":expert_team_id})
 
-    CALL protocol-confirmation-node(stage="S7→S8", output=s7_output)
+    CALL protocol-confirmation-node(node_id="stage_7_end", content=s7_output, current_stage="S7")
     CALL protocol-quality-gate(stage=7, output=s7_output)
     SNAPSHOT pipeline_state.snapshots["S7"] = s7_output
 
@@ -336,10 +358,12 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "--- 阶段 8/8: 平台执行 ---" TO user
 
     LOAD_SKILL "pipeline-s8-platform-execution"
+    # 字段名对齐S8 input_schema: s7_outputs(复数) + platform
     s8_input = {
-        s7_output: s7_output,
-        platform_adapter: platform_adapter,
-        expert_team_id: expert_team_id
+        "s7_outputs": s7_output,
+        "platform": target_platform,
+        "platform_adapter": platform_adapter,
+        "expert_team_id": expert_team_id
     }
     s8_output = EXECUTE pipeline-s8-platform-execution(s8_input)
     # S8内部自动调用: protocol-error-handling (部署失败时)
@@ -362,8 +386,8 @@ FUNCTION execute_team_orchestrator(input):
     OUTPUT "领域类型: " + pipeline_state.domain_type TO user
     OUTPUT "目标平台: " + target_platform TO user
 
-    # 知识沉淀
-    CALL protocol-knowledge-persistence(stage="final", output=pipeline_state)
+    # 知识沉淀 (对齐knowledge-persistence input_schema)
+    CALL protocol-knowledge-persistence(decision_type="execution", content=pipeline_state, metadata={"stage":"final", "expert_team_id":expert_team_id})
 
     final_output = {
         expert_team_package: s7_output.expert_package,
@@ -385,14 +409,19 @@ FUNCTION execute_team_orchestrator(input):
 FUNCTION RESOLVE_CHANNEL(initial_hint, domain_profile):
     """
     根据S1初评和S2领域分类的联合结果确定最终通道
+    字段路径与stage-routing.json的channel_resolution.rules一致
     """
+    # 从domain_profile提取顶层变量（与stage-routing.json字段路径一致）
+    is_regulated = domain_profile.is_regulated IF EXISTS ELSE false
+    complexity = domain_profile.complexity IF EXISTS ELSE "medium"
+
     # 用户可升级通道但不可降级（除非明确声明理解风险）
-    IF domain_profile.is_regulated == true:
+    IF is_regulated == true:
         RETURN "strict"  # 强监管领域强制strict
 
-    IF initial_hint == "fast" AND domain_profile.complexity == "low":
+    IF initial_hint == "fast" AND complexity == "low":
         RETURN "fast"
-    ELIF initial_hint == "strict" OR domain_profile.complexity == "high":
+    ELIF initial_hint == "strict" OR complexity == "high":
         RETURN "strict"
     ELSE:
         RETURN "standard"
@@ -402,21 +431,26 @@ FUNCTION RESOLVE_CHANNEL(initial_hint, domain_profile):
 
 本编排器在S7阶段根据 `knowledge/protocol-activation-map.json` 中的 `protocol_activation_matrix` 自动激活对应协议子集：
 
-| 领域类型 | 通道 | 激活的L2协议 |
+| 领域类型 | 通道 | 激活的L2协议（完整Skill ID，与activation-map.json一致） |
 |---------|------|-------------|
-| A (内容创作) | fast | quality-gate, output-format |
-| A | standard | + compliance-engine, naming-convention |
-| A | strict | + data-security, tool-integration |
-| B (数据分析) | fast | quality-gate, output-format |
-| B | standard | + compliance-engine, naming-convention, tool-integration |
-| B | strict | + data-security, error-handling, human-approval |
-| C (知识管理) | standard | + automation-trigger |
-| C | strict | + data-security, human-approval |
-| D (流程自动化) | standard | + automation-trigger, tool-integration |
-| D | strict | + data-security, human-approval |
-| F (客户服务) | standard | + error-handling, feedback-loop |
-| F | strict | + data-security, knowledge-persistence, human-approval |
-| _fallback | any | quality-gate, output-format |
+| A | fast | protocol-quality-gate, constraint-output-format |
+| A | standard | protocol-quality-gate, protocol-compliance-engine, constraint-output-format, constraint-naming-convention |
+| A | strict | protocol-quality-gate, protocol-compliance-engine, protocol-data-security, constraint-output-format, constraint-naming-convention, constraint-tool-integration |
+| B | fast | protocol-quality-gate, constraint-output-format |
+| B | standard | protocol-quality-gate, protocol-compliance-engine, constraint-output-format, constraint-naming-convention, constraint-tool-integration |
+| B | strict | protocol-quality-gate, protocol-compliance-engine, protocol-data-security, protocol-error-handling, constraint-output-format, constraint-naming-convention, constraint-tool-integration, protocol-human-approval |
+| C | fast | protocol-quality-gate, constraint-output-format |
+| C | standard | protocol-quality-gate, protocol-compliance-engine, constraint-output-format, constraint-naming-convention, constraint-tool-integration, protocol-automation-trigger |
+| C | strict | protocol-quality-gate, protocol-compliance-engine, protocol-data-security, constraint-output-format, constraint-naming-convention, constraint-tool-integration, protocol-human-approval |
+| D | fast | protocol-quality-gate, constraint-output-format |
+| D | standard | protocol-quality-gate, constraint-output-format, constraint-naming-convention, protocol-automation-trigger, constraint-tool-integration |
+| D | strict | protocol-quality-gate, protocol-compliance-engine, protocol-data-security, constraint-output-format, constraint-naming-convention, constraint-tool-integration, protocol-human-approval |
+| F | fast | protocol-quality-gate, constraint-output-format, constraint-naming-convention |
+| F | standard | protocol-quality-gate, protocol-compliance-engine, constraint-output-format, constraint-naming-convention, protocol-error-handling, protocol-feedback-loop |
+| F | strict | protocol-quality-gate, protocol-compliance-engine, protocol-data-security, protocol-error-handling, protocol-feedback-loop, constraint-output-format, constraint-naming-convention, constraint-tool-integration, protocol-human-approval, protocol-knowledge-persistence |
+| _fallback | any | protocol-quality-gate, constraint-output-format |
+
+> 注：此表与 knowledge/protocol-activation-map.json 完全一致，修改时须同步更新两处。
 
 ### L3适配器激活规则
 
@@ -434,17 +468,17 @@ FUNCTION RESOLVE_CHANNEL(initial_hint, domain_profile):
 | Dify | platform-dify-adapter |
 | 其他/未确定 | platform-universal-adapter |
 
-### L0/L4全程横贯规则
+### L0/L4按需横贯规则
 
-以下skill在**全程**自动激活，不需要条件判断：
+以下skill**按需激活**（非全程内化），根据阶段任务条件激活：
 
-- **L0核心引擎** (6个): 全程内化运行，为所有阶段提供推理基础
-  - core-mental-model-engine: 每个阶段都调用
-  - core-deliverable-backward-engine: S3/S4/S5/S7调用
-  - core-domain-classifier: S2调用
-  - core-complexity-channel-selector: S1调用
-  - core-state-management-engine: 跨阶段状态管理
-  - core-symbol-system: 全程符号一致性
+- **L0核心引擎** (6个): 按需激活，避免token爆炸
+  - core-mental-model-engine: 仅在S1/S5/S7阶段需要复杂推理时激活
+  - core-deliverable-backward-engine: 仅在S3/S4/S5阶段激活
+  - core-domain-classifier: 仅在S2阶段激活
+  - core-complexity-channel-selector: 仅在S1/S2阶段激活
+  - core-state-management-engine: 在阶段跳转和回退时激活
+  - core-symbol-system: 仅在输出格式校验时激活
 
 - **L4全局约束** (5个): 全程横贯，任何skill均受约束
   - constraint-mandatory-rules: 21条强制规则不可覆盖
@@ -494,6 +528,21 @@ FUNCTION HANDLE_PIPELINE_ERROR(error, current_stage):
             COLLECT_COMPLETED_OUTPUTS()
             FILL_UNCOMPLETED_WITH_MINIMAL()
             OUTPUT "[系统] 已按要求紧急终止，已完成阶段的输出已保存。" TO user
+        CASE "user_requirement_change":
+            # 用户中途修改需求
+            OUTPUT "[系统] 检测到需求变更，正在评估影响范围..." TO user
+            change_scope = ANALYZE_CHANGE_SCOPE(error.new_requirement, pipeline_state)
+            IF change_scope.affects_domain_type:
+                OUTPUT "[系统] 需求变更影响领域分类，回退到S2重新执行" TO user
+                ROLLBACK_TO("S2")
+                RE_EXECUTE_FROM("S2")
+            ELIF change_scope.affects_deliverables:
+                OUTPUT "[系统] 需求变更影响交付物定义，回退到S4重新执行" TO user
+                ROLLBACK_TO("S4")
+                RE_EXECUTE_FROM("S4")
+            ELSE:
+                OUTPUT "[系统] 需求变更较小，在当前阶段内调整" TO user
+                RETRY current_stage WITH error.new_requirement
         DEFAULT:
             CALL protocol-error-handling(stage=current_stage, error=error)
 ```

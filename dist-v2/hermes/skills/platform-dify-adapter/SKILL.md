@@ -1,21 +1,16 @@
 ---
 name: platform-dify-adapter
-description: 使用Dify Workflow的Schedule Trigger;独立映射表。 Use when: 用户说"platform-dify-adapter、Dify适配器、L3-Dify"等触发词。
-version: 1.0.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l3]
-    related_skills: []
-    requires_toolsets: []
+id: "platform-dify-adapter"
+layer: "L3"
+name_zh: "Dify平台适配器"
+name_en: "Dify Adapter"
+version: "1.0.0"
+description: 使用Dify Workflow的Schedule Trigger;独立映射表。
+agent_created: true
+trigger_keywords: ["platform-dify-adapter", "Dify适配器", "L3-Dify"]
+dependencies: ["pipeline-s7-expert-package-generation"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L3` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# Dify平台适配器
-
-> **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-dify-adapter` | **中文名**: Dify平台适配器 | **英文名**: Dify Adapter
 # Dify平台适配器 (Dify Adapter)
 
 > **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-dify-adapter`
@@ -203,6 +198,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-dify-adapter/format-spec` — Dify平台适配器格式规范
 
 ## 依赖关系

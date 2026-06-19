@@ -1,21 +1,16 @@
 ---
 name: protocol-quality-gate
-description: 八层65项自检(原八层59项+标注比例约束+商业模式可行性)→汇总为架构健康检查报告→🟡有条件通过→🔴阻断输出。v1.4.0新增认知诚实标注比例约束和商业模式可 Use when: 用户说"protocol-quality-gate、质量门、L2质检"等触发词。
-version: 1.4.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l2]
-    related_skills: []
-    requires_toolsets: []
+id: "protocol-quality-gate"
+layer: "L2"
+name_zh: "质量守门协议"
+name_en: "Quality Gate"
+version: "1.4.0"
+description: 八层65项自检(原八层59项+标注比例约束+商业模式可行性)→汇总为架构健康检查报告→🟡有条件通过→🔴阻断输出。v1.4.0新增认知诚实标注比例约束和商业模式可行性检查。
+agent_created: true
+trigger_keywords: ["protocol-quality-gate", "质量门", "L2质检"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L2` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 质量守门协议
-
-> **层级**: L2 | **版本**: 1.4.0 | **ID**: `protocol-quality-gate` | **中文名**: 质量守门协议 | **英文名**: Quality Gate
 # 质量守门协议 (Quality Gate)
 
 > **层级**: L2 | **版本**: 1.4.0 | **ID**: `protocol-quality-gate`
@@ -35,22 +30,29 @@ metadata:
 {
   "type": "object",
   "properties": {
+    "stage": {
+      "type": "integer",
+      "enum": [1, 2, 3, 4, 5, 6, 7, 8],
+      "description": "当前阶段编号，决定执行哪些自检层"
+    },
+    "output": {
+      "type": "object",
+      "description": "当前阶段的输出，用于自检"
+    },
     "architecture": {
       "type": "object",
-      "description": "S5架构输出"
+      "description": "S5架构输出（仅stage>=5时必填）"
     },
     "expert_package": {
       "type": "object",
-      "description": "S7专家包输出"
+      "description": "S7专家包输出（仅stage>=7时必填）"
     },
     "previous_stage_outputs": {
       "type": "object",
-      "description": "前序阶段输出"
+      "description": "前序阶段输出（用于跨阶段一致性检查）"
     }
   },
-  "required": [
-    "architecture"
-  ]
+  "required": ["stage", "output"]
 }
 ```
 
@@ -374,6 +376,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://quality-gate/seven-layers-checklist` — 七层自检清单(5.1-5.7)
 
 ## 依赖关系
@@ -461,18 +465,35 @@ FUNCTION execute_quality_gate(stage, output_draft):
 
 ```text
 FUNCTION execute_protocol_quality_gate(input):
-    ASSERT input.architecture IS NOT NULL
+    // 按阶段条件校验（不再无条件要求architecture）
+    ASSERT input.stage IS NOT NULL
+    IF input.stage >= 5:
+        ASSERT input.architecture IS NOT NULL, "S5+阶段必须提供architecture"
+    IF input.stage >= 7:
+        ASSERT input.expert_package IS NOT NULL, "S7+阶段必须提供expert_package"
 
-    // === 第一步：加载七层自检清单与上下文 ===
-    LOAD file://quality-gate/seven-layers-checklist
+    // === 第一步：按阶段决定执行哪些自检层 ===
+    // 七层自检清单已在本SKILL.md正文中定义，无需外部加载
     LOAD context_inheritance FROM core-mental-model-engine
+    STAGE_LAYER_MAP = {
+        1: ["用户层"],
+        2: ["用户层", "合规层"],
+        3: ["用户层", "工作流层"],
+        4: ["用户层", "工作流层"],
+        5: ["架构层","角色层","合规层","工作流层","数据安全层","用户层","平台可执行性层"],
+        6: ["工作流层","数据安全层"],
+        7: ["架构层","角色层","合规层","工作流层","数据安全层","用户层","平台可执行性层"],
+        8: ["平台可执行性层","数据安全层"]
+    }
     report = {}
     warnings = []
     blockers = []
     blocking_issues = []
 
-    // === 第二步：七层48项逐一自检(5.1-5.7) ===
-    layers = [架构层(6项), 角色层(8项), 合规层(6项), 工作流层(6项), 数据安全层(4项), 用户层(6项), 平台可执行性层(12项)]
+    // === 第二步：按阶段差异化自检(仅执行active_layers) ===
+    ALL_LAYERS = {"架构层(6项)", "角色层(8项)", "合规层(6项)", "工作流层(6项)", "数据安全层(4项)", "用户层(6项)", "平台可执行性层(12项)"}
+    active_layers = STAGE_LAYER_MAP[input.stage]
+    layers = [layer FOR layer IN ALL_LAYERS IF layer.name IN active_layers]
 
     FOR layer IN layers:
         layer_result = {}
@@ -557,7 +578,7 @@ FUNCTION execute_protocol_quality_gate(input):
     ASSERT health_report IS NOT EMPTY
     ASSERT blockers IS EMPTY  // 若非空则已在第五步递归修复
 
-    CALL protocol-quality-gate before final output  // 自检闭环
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {health_report, warnings, blockers}
 ```
 

@@ -1,3 +1,15 @@
+---
+name: pipeline-s2-domain-disambiguation
+id: "pipeline-s2-domain-disambiguation"
+layer: "L1"
+name_zh: "阶段二：领域分类与消歧"
+name_en: "Stage 2: Domain Disambiguation"
+version: "1.1.0"
+description: 调用core-domain-classifier，4维度逐个消解歧义(领域本体/目标用户/交付形式/交付渠道)，输出领域确认卡(支持多标签组合+时序演化)。歧义消解强确认。
+agent_created: true
+trigger_keywords: ["S2执行", "领域确认", "分类消歧", "标签组合", "领域画像"]
+dependencies: ["core-mental-model-engine", "core-domain-classifier", "core-complexity-channel-selector", "protocol-single-question-guidance", "protocol-confirmation-node", "protocol-quality-gate"]
+---
 
 # 阶段二：领域分类与消歧 (Stage 2: Domain Disambiguation)
 
@@ -24,12 +36,11 @@
     },
     "domain_suggestion": {
       "type": "object",
-      "description": "core-domain-classifier输出"
+      "description": "可选：外部预生成的领域建议。为空时S2内部调用core-domain-classifier生成"
     }
   },
   "required": [
-    "s1_outputs",
-    "domain_suggestion"
+    "s1_outputs"
   ]
 }
 ```
@@ -207,7 +218,7 @@
     "team_size": 3
   },
   "domain_suggestion": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为组合标记，主类型为A，次类型含F
     "domain_name": "混合型(A+F)",
     "confidence": "medium",
     "ambiguity": "同时涉及内容传播和客户服务，建议按E型处理"
@@ -282,6 +293,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/stage-2-rules.md` — 阶段2执行规则
 - **[dynamic]** `file://./knowledge/stage-2-state.json` — 阶段2运行时状态
 
@@ -548,11 +561,14 @@ FUNCTION execute_pipeline_s2_domain_disambiguation(input):
 
     channel_hint = CALL core-complexity-channel-selector(revised_channel, confirmed_domain, compliance_activation_map)
 
-    # ===== 步骤7: 确定反馈回路需求 =====
+    # ===== 步骤7: 确定反馈回路需求（E型已改为组合标记，通过domain_profile判断混合型） =====
     feedback_loops_required = []
-    IF confirmed_domain IN ["A", "E"]:
+    has_secondary = domain_profile EXISTS AND LENGTH(domain_profile.secondary_domains) > 0
+    secondary_contains_a = has_secondary AND "A" IN domain_profile.secondary_domains
+    secondary_contains_f = has_secondary AND "F" IN domain_profile.secondary_domains
+    IF confirmed_domain == "A" OR secondary_contains_a:
         APPEND "内容效果反馈" TO feedback_loops_required
-    IF confirmed_domain IN ["F", "E"]:
+    IF confirmed_domain == "F" OR secondary_contains_f:
         APPEND "满意度追踪" TO feedback_loops_required
     IF confirmed_domain == "B":
         APPEND "项目进度反馈" TO feedback_loops_required

@@ -1,24 +1,19 @@
 ---
 name: core-symbol-system
-description: 统一信息准确性、合规风险、质量等级和平台执行状态的符号，禁止跨层级混用。 Use when: 用户说"core-symbol-system、符号系统、L0符号"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l0]
-    related_skills: []
-    requires_toolsets: []
+id: "core-symbol-system"
+layer: "L0"
+name_zh: "符号系统"
+name_en: "Symbol System"
+version: "1.1.0"
+description: 统一信息准确性、合规风险、质量等级和平台执行状态的符号，禁止跨层级混用。
+agent_created: true
+trigger_keywords: ["core-symbol-system", "符号系统", "L0符号"]
+dependencies: []
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L0` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 符号系统
-
-> **层级**: L0 | **版本**: 1.1.0 | **ID**: `core-symbol-system` | **中文名**: 符号系统 | **英文名**: Symbol System
 # 符号系统 (Symbol System)
 
-> **层级**: L0 | **版本**: 1.0.0 | **ID**: `core-symbol-system`
+> **层级**: L0 | **版本**: 1.1.0 | **ID**: `core-symbol-system`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -214,7 +209,7 @@ FUNCTION execute_core_symbol_system(input):
         meaning: meaning,
         usage_rule: "仅限{input.semantic_layer}层使用，禁止跨层级混用"
     }
-    CALL protocol-quality-gate("symbol_check", output)
+    // 质量门控由编排器在阶段结束后统一调用（避免递归）
     RETURN output
 
 FUNCTION LOAD_TRANSITION_RULES(semantic_layer):
@@ -314,6 +309,8 @@ FUNCTION LOAD_TRANSITION_RULES(semantic_layer):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://doc1/core-symbol-system/rules` — Doc1对应SK原始规则
 - **[dynamic]** `file://runtime/core-symbol-system/state` — 运行时状态
 - **[rag]** `file://rag/core-symbol-system/references` — 向量检索参考资料

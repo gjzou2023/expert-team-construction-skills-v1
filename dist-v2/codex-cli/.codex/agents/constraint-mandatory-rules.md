@@ -1,3 +1,15 @@
+---
+name: constraint-mandatory-rules
+id: "constraint-mandatory-rules"
+layer: "L4"
+name_zh: "强制执行规则(不可覆盖)"
+name_en: "Mandatory Rules"
+version: "1.1.0"
+description: 全程横贯，任何Skill执行时受此约束。21条强制规则不可覆盖。
+agent_created: true
+trigger_keywords: ["constraint-mandatory-rules", "强制规则约束", "L4强制"]
+dependencies: []
+---
 
 # 强制执行规则(不可覆盖) (Mandatory Rules)
 
@@ -10,7 +22,7 @@
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：规则, 约束, 强制, 规范, 命名
+当检测到以下关键词或场景时自动激活：强制规则约束, L4强制, 21条规则检查
 
 ## 输入规范 (input_schema)
 
@@ -182,6 +194,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/constraint-mandatory-rules.md` — 强制执行规则(不可覆盖)完整规则集
 
 ## 依赖关系

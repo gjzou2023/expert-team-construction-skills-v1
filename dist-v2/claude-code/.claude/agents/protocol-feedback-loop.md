@@ -1,12 +1,16 @@
 ---
 name: protocol-feedback-loop
-description: 按领域类型确定必建反馈回路类型，为每条回路定义信号源/处理动作/频率/冷启动策略。v1.3.0新增多轮深化引导与反馈收集闭环。与5.9调度监控指标关联。 Use when: 用户说"protocol-feedback-loop、反馈回路协议、L2反馈"等触发词。
-tools: Read
+id: "protocol-feedback-loop"
+layer: "L2"
+name_zh: "反馈闭环协议"
+name_en: "Feedback Loop Protocol"
+version: "1.3.0"
+description: 按领域类型确定必建反馈回路类型，为每条回路定义信号源/处理动作/频率/冷启动策略。v1.3.0新增多轮深化引导与反馈收集闭环。与5.9调度监控指标关联。
+agent_created: true
+trigger_keywords: ["protocol-feedback-loop", "反馈回路协议", "L2反馈"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-# 反馈闭环协议
-
-> **层级**: L2 | **版本**: 1.3.0 | **ID**: `protocol-feedback-loop` | **中文名**: 反馈闭环协议 | **英文名**: Feedback Loop Protocol
 # 反馈闭环协议 (Feedback Loop Protocol)
 
 > **层级**: L2 | **版本**: 1.3.0 | **ID**: `protocol-feedback-loop`
@@ -249,6 +253,8 @@ E. 对方案进行压力测试/风险推演
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://feedback-loops/domain-required-loops` — 按领域类型必建反馈回路映射
 
 ## 依赖关系
@@ -259,10 +265,10 @@ E. 对方案进行压力测试/风险推演
 
 ```text
 FUNCTION execute_protocol_feedback_loop(input):
-    ASSERT input.domain_type IN ["A","B","C","D","E","F"]
+    ASSERT input.domain_type IN ["A","B","C","D","F"]  # E型已改为A-F组合标记
 
     // === 第一步：按领域类型确定必建反馈回路 ===
-    LOAD file://feedback-loops/domain-required-loops
+    // 按领域类型必建反馈回路映射已在本SKILL.md正文中定义，无需外部加载
     loops = []
     domain_required = GET_REQUIRED_LOOPS(input.domain_type)
 
@@ -274,10 +280,11 @@ FUNCTION execute_protocol_feedback_loop(input):
     // F型: 2条(客户满意度+响应时间)
     // E型: 取包含子类型的并集
 
-    IF input.domain_type == "E":
-        // E型复合场景：取包含子类型的并集
-        sub_types = IDENTIFY_SUB_TYPES(input)
-        FOR sub IN sub_types:
+    // 使用domain_profile判断混合型（E型已改为A-F的组合标记，不再是独立类型）
+    IF input.domain_profile EXISTS AND LENGTH(input.domain_profile.secondary_domains) > 0:
+        // 混合型场景：取包含子类型的并集
+        all_types = [input.domain_profile.primary_domain] + input.domain_profile.secondary_domains
+        FOR sub IN all_types:
             sub_required = GET_REQUIRED_LOOPS(sub)
             FOR req IN sub_required:
                 IF req NOT IN domain_required:
@@ -364,7 +371,7 @@ FUNCTION execute_protocol_feedback_loop(input):
     ASSERT LENGTH(loops) > 0
     ASSERT LENGTH(monitoring_metrics) > 0
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {loops, monitoring_metrics}
 ```
 

@@ -1,15 +1,19 @@
 ---
 name: protocol-confirmation-node
-description: 管理强确认/软确认节点，检查阶段跳转5项条件，特别处理Q9平台确认。 Use when: 用户说"protocol-confirmation-node、确认节点协议、L2确认"等触发词。
-tools: Read
+id: "protocol-confirmation-node"
+layer: "L2"
+name_zh: "确认节点管理协议"
+name_en: "Confirmation Node Protocol"
+version: "1.1.0"
+description: 管理强确认/软确认节点，检查阶段跳转5项条件，特别处理Q9平台确认。
+agent_created: true
+trigger_keywords: ["protocol-confirmation-node", "确认节点协议", "L2确认"]
+dependencies: ["core-state-management-engine"]
 ---
 
-# 确认节点管理协议
-
-> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-confirmation-node` | **中文名**: 确认节点管理协议 | **英文名**: Confirmation Node Protocol
 # 确认节点管理协议 (Confirmation Node Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-confirmation-node`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-confirmation-node`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -34,6 +38,10 @@ tools: Read
     },
     "current_stage": {
       "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "description": "向后兼容：编排器使用的阶段跳转标识(如S1→S2)，内部映射到node_id"
     }
   },
   "required": [
@@ -81,19 +89,34 @@ FUNCTION execute_protocol_confirmation_node(input):
     ASSERT input.node_id IS NOT EMPTY
     ASSERT input.content IS NOT EMPTY
 
-    // === 强确认6个 + 软确认3个 ===
+    // === 阶段跳转标识到 node_id 的映射（向后兼容编排器的stage参数） ===
+    STAGE_TO_NODE_ID = {
+        "S1→S2": "stage_1_end",
+        "S2→S3": "stage_2_end",
+        "S3→S4": "stage_3_workflow",
+        "S4→S5": "stage_4_end",
+        "S5→S6": "stage_5_end",
+        "S6→S7": "stage_6_tools",
+        "S7→S8": "stage_7_end"
+    }
+    // 如果传入的是阶段跳转标识（如"S1→S2"），映射到node_id
+    IF input.node_id IN KEYS(STAGE_TO_NODE_ID):
+        input.node_id = STAGE_TO_NODE_ID[input.node_id]
+
+    // === 强确认8个 + 软确认2个（与stage-routing.json的confirmation_required一致） ===
     STRONG_CONFIRM_NODES = [
+        "stage_1_end",       // S1需求确认（stage-routing: confirmation_required=true）
         "stage_2_end",       // S2消歧结束：领域类型+用户画像确认
-        "stage_4_end",       // S4通道选择结束：标准/快速通道确认
+        "stage_4_end",       // S4交付物锚定结束：交付物+通道确认
         "stage_5_end",       // S5角色架构设计结束：角色定义+MECE校验确认
-        "stage_7_end",       // S7三步门结束：最终配置确认
+        "stage_6_end",       // S6工具链确认（stage-routing: confirmation_required=true）
+        "stage_7_end",       // S7四步确认门结束：最终配置确认
         "Q9_platform",       // Q9平台变更确认(特殊处理)
         "stage_2_ambiguity"  // S2存在歧义时的消歧确认
     ]
     SOFT_CONFIRM_NODES = [
-        "stage_1_questions",  // S1初始问答(默认继续)
-        "stage_3_workflow",   // S3工作流设计(默认继续)
-        "stage_6_tools"       // S6工具配置(默认继续)
+        "stage_3_workflow",  // S3工作流设计（stage-routing: confirmation_required=false）
+        "stage_8_deploy"     // S8平台执行（stage-routing: confirmation_required=false）
     ]
 
     confirmed = false
@@ -192,7 +215,7 @@ FUNCTION execute_protocol_confirmation_node(input):
     ASSERT correction_required == true OR correction_required == false
     ASSERT transition_allowed == true OR transition_allowed == false
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {confirmed, correction_required, transition_allowed}
 ```
 
@@ -283,6 +306,8 @@ FUNCTION execute_protocol_confirmation_node(input):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://doc1/protocol-confirmation-node/rules` — Doc1对应SK原始规则
 - **[dynamic]** `file://runtime/protocol-confirmation-node/state` — 运行时状态
 - **[rag]** `file://rag/protocol-confirmation-node/references` — 向量检索参考资料

@@ -1,6 +1,6 @@
 ---
 name: platform-comfyui-adapter
-description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：ComfyUI可用→完整自动化;不可用→手动+参数快照;无任何工具→纯描述+占位。 Use when: 用户说"platform-comfyui-adapter、ComfyUI适配器、L3-ComfyUI"等触发词。
+description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：ComfyUI可用→完整自动化;不可用→手动+参数快照;无任何工具→纯描述+占位 Use when: 用户说"platform-comfyui-adapter、ComfyUI适配器、L3-ComfyUI"等触发词。
 ---
 
 # ComfyUI多模态生成适配器
@@ -101,7 +101,7 @@ description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": true
   },
@@ -138,7 +138,7 @@ description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": false
   },
@@ -166,7 +166,7 @@ description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "no_visual_tools": true
   },
@@ -196,6 +196,8 @@ description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-comfyui-adapter/format-spec` — ComfyUI多模态生成适配器格式规范
 
 ## 依赖关系

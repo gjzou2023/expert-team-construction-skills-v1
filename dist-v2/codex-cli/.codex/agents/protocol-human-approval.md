@@ -1,7 +1,19 @@
+---
+name: protocol-human-approval
+id: "protocol-human-approval"
+layer: "L2"
+name_zh: "人机协作审批协议"
+name_en: "Human Approval Protocol"
+version: "1.1.0"
+description: 定义审批链模板(请求→审核→批准/驳回)，超时升级机制，条件审批处理，纯提示词降级，数据契约。
+agent_created: true
+trigger_keywords: ["protocol-human-approval", "人工审批协议", "L2审批"]
+dependencies: ["core-mental-model-engine"]
+---
 
 # 人机协作审批协议 (Human Approval Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-human-approval`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-human-approval`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -173,6 +185,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://approval/escalation-rules` — 超时升级规则
 
 ## 依赖关系
@@ -192,8 +206,16 @@ FUNCTION execute_protocol_human_approval(input):
         "高敏感度数据第三方使用",
         "合规审查红灯修复后重审",
         "平台变更(Q9平台确认)",
-        "S7三步门关键节点",
-        "涉及金融/医疗/法律合规决策"
+        "S7四步确认门关键节点",
+        "涉及金融/医疗/法律合规决策",
+        // A型内容创作运行时审批节点
+        "A型内容创作的选题审批（选题确定后、内容创作前）",
+        "A型内容创作的终稿审核（内容创作完成、平台发布前）",
+        // 其他业务类型关键审批节点
+        "B型服务交付的里程碑验收（每个交付物里程碑完成时）",
+        "F型客服的SLA异常升级（连续3次未达标或客户投诉升级时）",
+        "C型知识管理的专家审校（知识入库前需领域专家审校）",
+        "D型流程自动化的异常暂停恢复（自动化流程暂停后恢复执行前）"
     ]
 
     IF MATCHES_ANY(input.content, MANDATORY_APPROVAL_SCENARIOS):
@@ -283,7 +305,7 @@ FUNCTION execute_protocol_human_approval(input):
     ASSERT approval_result IN ["approved","rejected","timeout_escalated","conditional"]
     ASSERT data_contract.hash IS NOT EMPTY
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {approval_result, conditions, data_contract}
 ```
 

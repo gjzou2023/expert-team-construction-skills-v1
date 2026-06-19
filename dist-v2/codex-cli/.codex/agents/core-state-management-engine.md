@@ -1,7 +1,19 @@
+---
+name: core-state-management-engine
+id: "core-state-management-engine"
+layer: "L0"
+name_zh: "状态管理引擎"
+name_en: "State Management Engine"
+version: "1.1.0"
+description: 维护阶段决策快照，处理用户回退、平台更换和长对话上下文压缩。
+agent_created: true
+trigger_keywords: ["core-state-management-engine", "状态管理引擎", "L0状态"]
+dependencies: ["core-mental-model-engine"]
+---
 
 # 状态管理引擎 (State Management Engine)
 
-> **层级**: L0 | **版本**: 1.0.0 | **ID**: `core-state-management-engine`
+> **层级**: L0 | **版本**: 1.1.0 | **ID**: `core-state-management-engine`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -97,7 +109,7 @@ FUNCTION execute_core_state_management_engine(input):
         ASSERT snapshot[input.stage].key_decisions IS NOT EMPTY, "关键决策不可为空"
         ASSERT snapshot[input.stage].dependencies IS NOT NULL, "依赖关系不可为空"
         OUTPUT "✅ 阶段{input.stage}快照已更新"
-        CALL protocol-quality-gate("snapshot_check", snapshot)
+        // 质量门控由编排器在阶段结束后统一调用（避免递归）
         RETURN snapshot
 
     // ========== 回退处理：6个触发词 + 5步流程 ==========
@@ -337,6 +349,8 @@ FUNCTION VALIDATE_SNAPSHOT_CONSISTENCY(snapshot):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/core-state-management-engine-rules.md` — Doc1对应SK原始规则
 - **[dynamic]** `file://./knowledge/core-state-management-engine-state.json` — 运行时状态
 - **[rag]** `file://./knowledge/core-state-management-engine-references/` — 向量检索参考资料

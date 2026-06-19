@@ -1,7 +1,19 @@
+---
+name: protocol-single-question-guidance
+id: "protocol-single-question-guidance"
+layer: "L2"
+name_zh: "单问引导协议"
+name_en: "Single Question Guidance Protocol"
+version: "1.1.0"
+description: 在信息采集阶段每次只问一个问题，生成2-4个具体选项和自定义入口，并做选项覆盖检查。
+agent_created: true
+trigger_keywords: ["protocol-single-question-guidance", "单问引导协议", "L2单问"]
+dependencies: ["core-mental-model-engine"]
+---
 
 # 单问引导协议 (Single Question Guidance Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-single-question-guidance`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-single-question-guidance`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -156,7 +168,7 @@ FUNCTION execute_protocol_single_question_guidance(input):
     ASSERT question_text IS NOT EMPTY
     ASSERT NOT CONTAINS_MULTIPLE_QUESTIONS(question_text)  // 约束1确认
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {question_text, options, summary}
 ```
 
@@ -263,6 +275,8 @@ FUNCTION execute_protocol_single_question_guidance(input):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://doc1/protocol-single-question-guidance/rules` — Doc1对应SK原始规则
 - **[dynamic]** `file://runtime/protocol-single-question-guidance/state` — 运行时状态
 - **[rag]** `file://rag/protocol-single-question-guidance/references` — 向量检索参考资料

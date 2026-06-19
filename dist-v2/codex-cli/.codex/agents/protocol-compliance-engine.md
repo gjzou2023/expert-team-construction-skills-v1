@@ -1,3 +1,15 @@
+---
+name: protocol-compliance-engine
+id: "protocol-compliance-engine"
+layer: "L2"
+name_zh: "合规协议引擎"
+name_en: "Compliance Engine"
+version: "1.4.0"
+description: 按领域类型和监管等级激活合规子协议，执行4级合规审查(法规>平台>服务>品牌)，输出合规审查报告。与protocol-quality-gate的5.3合规层联动。分四模块条件激活：(1)4.1内容合规(2)4.2行业专项(3)4.3合规审查流程(4)4.4强监管协议(5)4.5违规应急。风险三级分流：🟢绿灯/🟡黄灯/🔴红
+agent_created: true
+trigger_keywords: ["protocol-compliance-engine", "合规引擎", "L2合规"]
+dependencies: ["core-mental-model-engine"]
+---
 
 # 合规协议引擎 (Compliance Engine)
 
@@ -202,6 +214,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://compliance/checklist-10-items` — 10项合规检查清单
 - **[dynamic]** `file://compliance/platform-latest-rules` — 目标平台最新规则(搜索获取)
 
@@ -214,7 +228,7 @@
 ```text
 FUNCTION execute_protocol_compliance_engine(input):
     ASSERT input.content IS NOT EMPTY
-    ASSERT input.domain_type IN ["A","B","C","D","E","F"]
+    ASSERT input.domain_type IN ["A","B","C","D","F"]  # E型已改为A-F组合标记
     ASSERT input.target_platform IS NOT EMPTY
 
     // === 第一步：判断工具状态(A型强制激活) ===
@@ -228,12 +242,12 @@ FUNCTION execute_protocol_compliance_engine(input):
         latest_rules = CALL web_search(input.target_platform + " 最新合规规则")
         rules_source = "实时搜索"
     ELIF tool_status == "search_available_but_failed":
-        latest_rules = LOAD file://compliance/checklist-10-items
+        latest_rules = LOAD_COMPLIANCE_CHECKLIST()  // 从本SKILL.md正文中定义的10项检查清单加载
         rules_source = "静态清单(搜索失败)"
         // 全🟢降级为🟡
         WARN "⚡知识来源为本地清单非实时规则"
     ELSE:
-        latest_rules = LOAD file://compliance/checklist-10-items
+        latest_rules = LOAD_COMPLIANCE_CHECKLIST()  // 从本SKILL.md正文中定义的10项检查清单加载
         rules_source = "静态清单"
         WARN "⚡知识来源为本地清单非实时规则"
 
@@ -309,7 +323,7 @@ FUNCTION execute_protocol_compliance_engine(input):
     ASSERT review_result IN ["green","yellow","red"]
     ASSERT LENGTH(details) > 0
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {review_result, details, action_required}
 ```
 

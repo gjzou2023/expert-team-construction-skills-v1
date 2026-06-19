@@ -1,24 +1,19 @@
 ---
 name: platform-codex-adapter
-description: 生成.codex/agents/*.toml+AGENTS.md+.codex/config.toml。description必须英文,developer_in Use when: 用户说"platform-codex-adapter、Codex适配器、L3-Codex"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l3]
-    related_skills: []
-    requires_toolsets: []
+id: "platform-codex-adapter"
+layer: "L3"
+name_zh: "Codex CLI平台适配器"
+name_en: "Codex CLI Adapter"
+version: "1.1.0"
+description: 生成.codex/agents/*.toml+AGENTS.md+.codex/config.toml。description必须英文,developer_in
+agent_created: true
+trigger_keywords: ["platform-codex-adapter", "Codex适配器", "L3-Codex"]
+dependencies: ["pipeline-s7-expert-package-generation"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L3` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# Codex CLI平台适配器
-
-> **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-codex-adapter` | **中文名**: Codex CLI平台适配器 | **英文名**: Codex CLI Adapter
 # Codex CLI平台适配器 (Codex CLI Adapter)
 
-> **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-codex-adapter`
+> **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-codex-adapter`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -204,6 +199,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-codex-adapter/format-spec` — Codex CLI平台适配器格式规范
 
 ## 依赖关系

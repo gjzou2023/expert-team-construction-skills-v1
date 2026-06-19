@@ -1,21 +1,16 @@
 ---
 name: protocol-early-termination
-description: 用户可随时要求跳到输出，收集已完成阶段输出+用快速模式最小输出填充未完成阶段，标记紧急终止。 Use when: 用户说"够了、直接给我、跳过这些、我只要结果、不要了"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l2]
-    related_skills: []
-    requires_toolsets: []
+id: "protocol-early-termination"
+layer: "L2"
+name_zh: "紧急终止协议"
+name_en: "Early Termination Protocol"
+version: "1.1.0"
+description: 用户可随时要求跳到输出，收集已完成阶段输出+用快速模式最小输出填充未完成阶段，标记紧急终止。
+agent_created: true
+trigger_keywords: ["够了", "直接给我", "跳过这些", "我只要结果", "不要了"]
+dependencies: ["core-mental-model-engine", "core-state-management-engine"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L2` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 紧急终止协议
-
-> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-early-termination` | **中文名**: 紧急终止协议 | **英文名**: Early Termination Protocol
 # 紧急终止协议 (Early Termination Protocol)
 
 > **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-early-termination`
@@ -236,6 +231,8 @@ FUNCTION execute_protocol_early_termination(input):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/early-termination-rules.md` — 紧急终止规则
 
 ## 依赖关系

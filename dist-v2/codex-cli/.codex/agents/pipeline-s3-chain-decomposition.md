@@ -1,7 +1,19 @@
+---
+name: pipeline-s3-chain-decomposition
+id: "pipeline-s3-chain-decomposition"
+layer: "L1"
+name_zh: "阶段三：链路拆解"
+name_en: "Stage 3: Chain Decomposition"
+version: "1.1.0"
+description: 从终端交付物倒推全链路，识别链路节点(节点ID→上下游依赖→断点标注)。S3负责'链路骨架'，不独立定义交付物内容；交付物填充由S4完成。快速通道下S3简化为3节点单链路直通(非跳过)，标准/strict通道下S3生成完整骨架节点，S4填充具体交付物。
+agent_created: true
+trigger_keywords: ["S3执行", "链路拆解", "链路骨架", "工作流拆解", "全链路倒推"]
+dependencies: ["core-mental-model-engine", "core-deliverable-backward-engine"]
+---
 
 # 阶段三：链路拆解 (Stage 3: Chain Decomposition)
 
-> **层级**: L1 | **版本**: 1.0.0 | **ID**: `pipeline-s3-chain-decomposition`
+> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s3-chain-decomposition`
 > **编排关系**: 本skill由 `team-orchestrator` 自动加载执行，用户不应直接触发。承接 `pipeline-s2-domain-disambiguation` 的输出，完成后自动衔接 `pipeline-s4-deliverable-anchoring`。快速通道下简化为单链路直通。
 
 ## 概述
@@ -27,7 +39,21 @@
       "items": {
         "type": "string"
       },
-      "description": "候选交付物"
+      "description": "候选交付物，由编排器从S1需求画像和S2领域画像推导"
+    },
+    "channel": {
+      "type": "string",
+      "enum": ["fast", "standard", "strict"],
+      "description": "执行通道，由编排器传递"
+    },
+    "s1_context": {
+      "type": "object",
+      "description": "S1需求画像的上下文信息（由编排器从S1输出中提取传递）",
+      "properties": {
+        "team_size": {"type": "integer"},
+        "ai_experience": {"type": "string"},
+        "target_platform": {"type": "string"}
+      }
     }
   },
   "required": [
@@ -214,6 +240,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://pipeline/stage-3-rules` — 阶段3执行规则
 - **[dynamic]** `file://pipeline/stage-3-state` — 阶段3运行时状态
 
@@ -232,9 +260,16 @@ FUNCTION execute_pipeline_s3_chain_decomposition(input):
     LOAD context_inheritance FROM s2
 
     s2_data = input.s2_outputs
-    domain_type = s2_data.confirmed_domain
-    channel = s2_data.channel_hint IF EXISTS ELSE "standard"
+    # 使用domain_profile.primary_domain替代confirmed_domain（E型已改为组合标记）
+    domain_type = s2_data.domain_profile.primary_domain IF EXISTS ELSE s2_data.confirmed_domain
+    # channel从input获取（由编排器传递），不从s2_data读取
+    channel = input.channel IF EXISTS ELSE "standard"
     deliverable_candidates = input.deliverable_candidates
+
+    # 从s1_context获取team_size和ai_experience（S2不含这些字段，它们在S1的need_portrait._context中）
+    s1_ctx = input.s1_context IF EXISTS ELSE {}
+    team_size = s1_ctx.team_size IF EXISTS ELSE 3
+    ai_experience = s1_ctx.ai_experience IF EXISTS ELSE "intermediate"
 
     # ===== 步骤1: 通道分流判断 =====
     IF channel == "fast":
@@ -250,9 +285,13 @@ FUNCTION execute_pipeline_s3_chain_decomposition(input):
         "D": ["数据采集", "指标定义", "分析建模", "洞察生成", "报告输出", "决策支持"],              # 6步
         "F": ["工单接收", "一级分流", "问题处理", "回复生成", "满意度追踪", "知识沉淀"]             # 6步
     }
-    IF domain_type == "E":
-        # 混合型：合并A+F链路，去重并标注分叉
-        base_chain = MERGE_CHAINS(DEFAULT_CHAINS["A"], DEFAULT_CHAINS["F"])
+    # 使用domain_profile判断混合型（E型已改为A-F的组合标记）
+    IF s2_data.domain_profile EXISTS AND LENGTH(s2_data.domain_profile.secondary_domains) > 0:
+        # 混合型：合并所有子类型链路，去重并标注分叉
+        all_types = [s2_data.domain_profile.primary_domain] + s2_data.domain_profile.secondary_domains
+        base_chain = []
+        FOR t IN all_types:
+            base_chain = MERGE_CHAINS(base_chain, DEFAULT_CHAINS[t])
     ELSE:
         base_chain = DEFAULT_CHAINS[domain_type]
 
@@ -313,7 +352,7 @@ FUNCTION execute_pipeline_s3_chain_decomposition(input):
             APPEND node.id + "→" + JOIN(node.downstream, "/") + ": 存在分叉，需分线处理" TO breakpoints
         # 检查合规瓶颈
         IF node.name CONTAINS "合规" OR node.name CONTAINS "审查":
-            IF domain_type IN ["B", "F", "E"]:
+            IF domain_type IN ["B", "F"] OR (s2_data.domain_profile EXISTS AND LENGTH(s2_data.domain_profile.secondary_domains) > 0):
                 APPEND node.id + ": 合规审查未自动化，依赖人工审核" TO breakpoints
 
     # ===== 步骤7: 外部+内部信号采集 =====
@@ -332,10 +371,10 @@ FUNCTION execute_pipeline_s3_chain_decomposition(input):
     ELIF domain_type == "D":
         APPEND "数据源可用性" TO external_signals
 
-    # 内部信号：团队能力、资源约束
-    IF s2_data.team_size == 1:
+    # 内部信号：团队能力、资源约束（使用从s1_context获取的值，而非s2_data）
+    IF team_size == 1:
         APPEND "单人资源瓶颈" TO internal_signals
-    IF s2_data.ai_experience == "novice":
+    IF ai_experience == "novice":
         APPEND "AI经验不足，工具链需简化" TO internal_signals
     IF LENGTH(deliverable_candidates) > 3:
         APPEND "交付物过多，需优先级排序" TO internal_signals

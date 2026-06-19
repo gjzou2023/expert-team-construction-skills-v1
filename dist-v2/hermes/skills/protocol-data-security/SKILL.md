@@ -1,24 +1,19 @@
 ---
 name: protocol-data-security
-description: 评估每个工具数据安全等级，高敏感度领域禁止敏感数据→未授权第三方，使用第三方工具必须注明数据流向。 Use when: 用户说"protocol-data-security、数据安全协议、L2数据安全"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l2]
-    related_skills: []
-    requires_toolsets: []
+id: "protocol-data-security"
+layer: "L2"
+name_zh: "数据安全协议"
+name_en: "Data Security Protocol"
+version: "1.1.0"
+description: 评估每个工具数据安全等级，高敏感度领域禁止敏感数据→未授权第三方，使用第三方工具必须注明数据流向。
+agent_created: true
+trigger_keywords: ["protocol-data-security", "数据安全协议", "L2数据安全"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L2` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 数据安全协议
-
-> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-data-security` | **中文名**: 数据安全协议 | **英文名**: Data Security Protocol
 # 数据安全协议 (Data Security Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-data-security`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-data-security`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -237,6 +232,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://data-security/three-principles` — 数据安全三原则
 - **[static]** `file://data-security/protection-levels` — 三级防护等级定义
 
@@ -252,8 +249,8 @@ FUNCTION execute_protocol_data_security(input):
     ASSERT input.domain_sensitivity IN ["low","medium","high"]
 
     // === 第一步：加载数据安全三原则 ===
-    LOAD file://data-security/three-principles
-    LOAD file://data-security/protection-levels
+    // 数据安全三原则已在本SKILL.md正文中定义，无需外部加载
+    // 数据保护等级已在本SKILL.md正文中定义，无需外部加载
     // 三原则：
     //   原则1: 高敏感度领域禁止敏感数据发送到未授权第三方
     //   原则2: 使用第三方工具必须注明数据流向
@@ -333,7 +330,7 @@ FUNCTION execute_protocol_data_security(input):
     ASSERT LENGTH(security_assessment) > 0
     ASSERT LENGTH(restrictions) >= 0
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {security_assessment, restrictions, compliance_notes}
 ```
 

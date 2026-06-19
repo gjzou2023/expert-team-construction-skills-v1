@@ -1,12 +1,16 @@
 ---
 name: pipeline-s1-need-diving
-description: 通过5-Why逐层追问(每次只问1个问题)挖掘真实需求，生成需求画像卡，初评复杂度。v1.4.0将需求澄清与Q1-Q9整合为分级需求采集流程（按用户角色动态调整 Use when: 用户说"阶段一、需求深潜、5-Why、需求画像、S1执行"等触发词。
-tools: Read, Write
+id: "pipeline-s1-need-diving"
+layer: "L1"
+name_zh: "阶段一：需求深潜"
+name_en: "Stage 1: Need Diving"
+version: "1.4.0"
+description: 通过5-Why逐层追问(每次只问1个问题)挖掘真实需求，生成需求画像卡，初评复杂度。v1.4.0将需求澄清与Q1-Q9整合为分级需求采集流程（按用户角色动态调整问题数量）。
+agent_created: true
+trigger_keywords: ["阶段一", "需求深潜", "5-Why", "需求画像", "S1执行"]
+dependencies: ["core-mental-model-engine", "core-complexity-channel-selector", "protocol-single-question-guidance"]
 ---
 
-# 阶段一：需求深潜
-
-> **层级**: L1 | **版本**: 1.4.0 | **ID**: `pipeline-s1-need-diving` | **中文名**: 阶段一：需求深潜 | **英文名**: Stage 1: Need Diving
 # 阶段一：需求深潜 (Stage 1: Need Diving)
 
 > **层级**: L1 | **版本**: 1.4.0 | **ID**: `pipeline-s1-need-diving`
@@ -232,6 +236,8 @@ tools: Read, Write
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/stage-1-rules.md` — 阶段1执行规则
 - **[dynamic]** `file://./knowledge/stage-1-state.json` — 阶段1运行时状态
 

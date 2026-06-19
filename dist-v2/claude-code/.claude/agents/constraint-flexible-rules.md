@@ -1,12 +1,16 @@
 ---
 name: constraint-flexible-rules
-description: 默认值，用户/领域需要时调整。11条灵活规则。 Use when: 用户说"constraint-flexible-rules、灵活规则约束、L4灵活"等触发词。
-tools: Read, Write
+id: "constraint-flexible-rules"
+layer: "L4"
+name_zh: "灵活适配规则"
+name_en: "Flexible Rules"
+version: "1.1.0"
+description: 默认值，用户/领域需要时调整。11条灵活规则。
+agent_created: true
+trigger_keywords: ["constraint-flexible-rules", "灵活规则约束", "L4灵活"]
+dependencies: []
 ---
 
-# 灵活适配规则
-
-> **层级**: L4 | **版本**: 1.1.0 | **ID**: `constraint-flexible-rules` | **中文名**: 灵活适配规则 | **英文名**: Flexible Rules
 # 灵活适配规则 (Flexible Rules)
 
 > **层级**: L4 | **版本**: 1.1.0 | **ID**: `constraint-flexible-rules`
@@ -18,7 +22,7 @@ tools: Read, Write
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：规则, 约束, 强制, 规范, 命名
+当检测到以下关键词或场景时自动激活：灵活规则约束, L4灵活, 11条规则调整
 
 ## 输入规范 (input_schema)
 
@@ -188,6 +192,8 @@ tools: Read, Write
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/constraint-flexible-rules.md` — 灵活适配规则完整规则集
 
 ## 依赖关系

@@ -1,3 +1,15 @@
+---
+name: protocol-early-termination
+id: "protocol-early-termination"
+layer: "L2"
+name_zh: "紧急终止协议"
+name_en: "Early Termination Protocol"
+version: "1.1.0"
+description: 用户可随时要求跳到输出，收集已完成阶段输出+用快速模式最小输出填充未完成阶段，标记紧急终止。
+agent_created: true
+trigger_keywords: ["够了", "直接给我", "跳过这些", "我只要结果", "不要了"]
+dependencies: ["core-mental-model-engine", "core-state-management-engine"]
+---
 
 # 紧急终止协议 (Early Termination Protocol)
 
@@ -219,6 +231,8 @@ FUNCTION execute_protocol_early_termination(input):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://./knowledge/early-termination-rules.md` — 紧急终止规则
 
 ## 依赖关系

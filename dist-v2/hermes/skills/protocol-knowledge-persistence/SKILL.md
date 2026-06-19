@@ -1,24 +1,19 @@
 ---
 name: protocol-knowledge-persistence
-description: 设计决策沉淀到§5.5，执行细节沉淀到§7.3，多模态资产管理(参数快照)。版本迁移指南。 Use when: 用户说"protocol-knowledge-persistence、知识沉淀协议、L2沉淀"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l2]
-    related_skills: []
-    requires_toolsets: []
+id: "protocol-knowledge-persistence"
+layer: "L2"
+name_zh: "知识资产沉淀协议"
+name_en: "Knowledge Persistence Protocol"
+version: "1.1.0"
+description: 设计决策沉淀到§5.5，执行细节沉淀到§7.3，多模态资产管理(参数快照)。版本迁移指南。
+agent_created: true
+trigger_keywords: ["protocol-knowledge-persistence", "知识沉淀协议", "L2沉淀"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L2` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# 知识资产沉淀协议
-
-> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-knowledge-persistence` | **中文名**: 知识资产沉淀协议 | **英文名**: Knowledge Persistence Protocol
 # 知识资产沉淀协议 (Knowledge Persistence Protocol)
 
-> **层级**: L2 | **版本**: 1.0.0 | **ID**: `protocol-knowledge-persistence`
+> **层级**: L2 | **版本**: 1.1.0 | **ID**: `protocol-knowledge-persistence`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -215,6 +210,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://knowledge-persistence/multimodal-template` — 多模态资产参数快照模板
 
 ## 依赖关系
@@ -330,7 +327,7 @@ FUNCTION execute_protocol_knowledge_persistence(input):
     ASSERT asset_type IN ["text","config","parameter_snapshot","multimodal"]
     ASSERT version IS NOT EMPTY
 
-    CALL protocol-quality-gate before final output
+    // 质量门控由编排器在阶段结束后统一调用，skill内部不再自调用quality-gate（避免递归）
     RETURN {persisted, storage_location, asset_type, version}
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: platform-hermes-adapter
-description: 生成skills/{skill-name}/SKILL.md+context/{context-name}.md。持续运行+内置定时+消息监听。 Use when: 用户说"platform-hermes-adapter、Hermes适配器、L3-Hermes"等触发词。
+description: 生成skills/{skill-name}/SKILL.md+context/{context-name}.md。持续运行+内置定时+消息监听 Use when: 用户说"platform-hermes-adapter、Hermes适配器、L3-Hermes"等触发词。
 version: 1.1.0
 platforms: [macos, linux, windows]
 metadata:
@@ -18,7 +18,7 @@ metadata:
 > **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-hermes-adapter` | **中文名**: Hermes Agent平台适配器 | **英文名**: Hermes Agent Adapter
 # Hermes Agent平台适配器 (Hermes Agent Adapter)
 
-> **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-hermes-adapter`
+> **层级**: L3 | **版本**: 1.1.0 | **ID**: `platform-hermes-adapter`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -197,6 +197,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-hermes-adapter/format-spec` — Hermes Agent平台适配器格式规范
 
 ## 依赖关系

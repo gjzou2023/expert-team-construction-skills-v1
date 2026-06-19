@@ -1,7 +1,19 @@
+---
+name: core-deliverable-backward-engine
+id: "core-deliverable-backward-engine"
+layer: "L0"
+name_zh: "交付物倒推引擎"
+name_en: "Deliverable Backward Engine"
+version: "1.1.0"
+description: 从用户需求提取终端交付物→分配唯一第一责任人→反推能力→定义角色→定义工具→定义数据流。严格禁止逆向（先角色后交付物）。
+agent_created: true
+trigger_keywords: ["core-deliverable-backward-engine", "交付物倒推引擎", "L0倒推"]
+dependencies: ["core-mental-model-engine"]
+---
 
 # 交付物倒推引擎 (Deliverable Backward Engine)
 
-> **层级**: L0 | **版本**: 1.0.0 | **ID**: `core-deliverable-backward-engine`
+> **层级**: L0 | **版本**: 1.1.0 | **ID**: `core-deliverable-backward-engine`
 > **编排关系**: 本skill由 `team-orchestrator` 按需自动加载执行，属于全域专家团构建skills系统的内部组件，用户不应直接触发。
 
 ## 概述
@@ -174,6 +186,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://domain-defaults/deliverable-templates` — 各领域默认交付物模板
 - **[static]** `file://naming-rules/role-naming` — 角色命名三分法规范
 
@@ -187,9 +201,9 @@
 FUNCTION execute_core_deliverable_backward_engine(input):
     // ========== 输入校验与初始化 ==========
     ASSERT input.user_need IS NOT EMPTY, "用户需求不可为空"
-    ASSERT input.domain_type IN ["A","B","C","D","E","F"], "领域类型必须为A-F之一"
+    ASSERT input.domain_type IN ["A","B","C","D","F"], "领域类型必须为A-F之一(E型已改为A-F组合标记)"
     LOAD context_inheritance FROM core-mental-model-engine
-    CALL protocol-quality-gate("pre_check", input)
+    // 质量门控由编排器在阶段结束后统一调用（避免递归）
 
     // ========== 第1步：从用户需求提取终端交付物 ==========
     raw_deliverables = EXTRACT_DELIVERABLES(input.user_need)
@@ -280,7 +294,7 @@ FUNCTION execute_core_deliverable_backward_engine(input):
         tool_requirement_map: tool_requirement_map,
         data_flow: data_flow_mermaid
     }
-    CALL protocol-quality-gate("final_check", output)
+    // 质量门控由编排器在阶段结束后统一调用（避免递归）
     RETURN output
 
 FUNCTION DETECT_REVERSE_TENDENCY(user_need):
@@ -293,7 +307,7 @@ FUNCTION DETECT_REVERSE_TENDENCY(user_need):
 
 FUNCTION REVERSE_ENGINEER_CAPABILITIES(deliverable, domain_type):
     // 根据交付物和领域类型反推所需能力
-    base_caps = LOAD_FROM_KB("file://domain-defaults/deliverable-templates", deliverable.format)
+    // 注意：以下为概念性引用，实际数据需根据上下文动态生成`n    `base_caps = LOAD_FROM_KB("file://domain-defaults/deliverable-templates", deliverable.format)
     domain_caps = LOAD_FROM_KB("file://domain-defaults/deliverable-templates", domain_type)
     RETURN UNION(base_caps, domain_caps)
 ```

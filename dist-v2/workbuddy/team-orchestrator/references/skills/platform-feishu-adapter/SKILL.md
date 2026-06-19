@@ -1,6 +1,6 @@
 ---
 name: platform-feishu-adapter
-description: 三种集成形态：消息型/交互型/深度集成。生成manifest.yaml+消息卡片模板+审批模板+多维表格Schema+定时触发配置。 Use when: 用户说"platform-feishu-adapter、飞书适配器、L3-飞书"等触发词。
+description: 三种集成形态：消息型/交互型/深度集成。生成manifest.yaml+消息卡片模板+审批模板+多维表格Schema+定时触发配置 Use when: 用户说"platform-feishu-adapter、飞书适配器、L3-飞书"等触发词。
 ---
 
 # 飞书平台适配器
@@ -195,6 +195,8 @@ description: 三种集成形态：消息型/交互型/深度集成。生成manif
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-feishu-adapter/format-spec` — 飞书平台适配器格式规范
 
 ## 依赖关系
@@ -216,7 +218,8 @@ FUNCTION execute_platform_feishu_adapter(input):
 
     // 阶段2: 形态确认(强制确认节点)
     domain_type = input.architecture.domain_type
-    IF domain_type == "A" AND NOT CONTAINS_ANY(input.architecture.features, ["B","C","D","E","F"]):
+    // E型已改为A-F组合标记，此处检查features中不再含E
+    IF domain_type == "A" AND NOT CONTAINS_ANY(input.architecture.features, ["B","C","D","F"]):
         integration_type = "消息通道型"
     ELIF CONTAINS_ANY(input.architecture.features, ["B"]) OR (domain_type == "A" AND CONTAINS(input.architecture.features, "B")):
         integration_type = "交互入口型"

@@ -1,21 +1,16 @@
 ---
 name: platform-comfyui-adapter
-description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：ComfyUI可用→完整自动化;不可用→手动+参数快照;无任何工具→纯描述+占位。 Use when: 用户说"platform-comfyui-adapter、ComfyUI适配器、L3-ComfyUI"等触发词。
-version: 1.0.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l3]
-    related_skills: []
-    requires_toolsets: []
+id: "platform-comfyui-adapter"
+layer: "L3"
+name_zh: "ComfyUI多模态生成适配器"
+name_en: "ComfyUI Adapter"
+version: "1.0.0"
+description: 视觉生产引擎：预设映射+SOP扩展(6步)。三档降级：ComfyUI可用→完整自动化;不可用→手动+参数快照;无任何工具→纯描述+占位。
+agent_created: true
+trigger_keywords: ["platform-comfyui-adapter", "ComfyUI适配器", "L3-ComfyUI"]
+dependencies: ["pipeline-s7-expert-package-generation"]
 ---
 
-> **注意**：本 skill 的核心规则已内联至 `team-orchestrator/SKILL.md` 的 `L3` 章节。
-> 执行时优先读取 team-orchestrator 的内联指引，仅在需要完整逻辑时再读取本文件。
->
-# ComfyUI多模态生成适配器
-
-> **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-comfyui-adapter` | **中文名**: ComfyUI多模态生成适配器 | **英文名**: ComfyUI Adapter
 # ComfyUI多模态生成适配器 (ComfyUI Adapter)
 
 > **层级**: L3 | **版本**: 1.0.0 | **ID**: `platform-comfyui-adapter`
@@ -111,7 +106,7 @@ metadata:
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": true
   },
@@ -148,7 +143,7 @@ metadata:
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "comfyui_available": false
   },
@@ -176,7 +171,7 @@ metadata:
 ```json
 {
   "architecture": {
-    "domain_type": "E",
+    "domain_type": "A",  # E型已改为A-F组合标记，示例改为A型
     "platform": "comfyui",
     "no_visual_tools": true
   },
@@ -206,6 +201,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-comfyui-adapter/format-spec` — ComfyUI多模态生成适配器格式规范
 
 ## 依赖关系

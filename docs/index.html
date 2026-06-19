@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全域专家团构建 Skills v1.0.0</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --green: #10b981;
+            --orange: #f59e0b;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+            color: white;
+            padding: 60px 20px 50px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.4em; font-weight: 800; margin-bottom: 12px; }
+        .hero .version { 
+            display: inline-block; background: rgba(255,255,255,0.2); 
+            padding: 4px 14px; border-radius: 20px; font-size: 0.9em; margin-bottom: 16px;
+        }
+        .hero p { font-size: 1.15em; opacity: 0.92; max-width: 700px; margin: 0 auto; }
+        .hero .badges { margin-top: 20px; }
+        .hero .badge {
+            display: inline-block; background: rgba(255,255,255,0.15);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85em;
+            margin: 4px; border: 1px solid rgba(255,255,255,0.25);
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        .section { margin-bottom: 50px; }
+        .section h2 {
+            font-size: 1.6em; font-weight: 700; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 2px solid var(--border);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section h2 .icon { font-size: 1.1em; }
+        
+        /* Architecture Table */
+        .arch-table {
+            width: 100%; border-collapse: collapse;
+            background: var(--card-bg); border-radius: 10px;
+            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .arch-table th {
+            background: var(--primary); color: white;
+            padding: 12px 16px; text-align: left; font-weight: 600;
+        }
+        .arch-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+        .arch-table tr:last-child td { border-bottom: none; }
+        .arch-table tr:hover { background: #f1f5f9; }
+        .arch-table .layer-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 12px;
+            font-size: 0.8em; font-weight: 600; color: white;
+        }
+        .layer-meta { background: var(--purple); }
+        .layer-l0 { background: var(--primary); }
+        .layer-l1 { background: var(--green); }
+        .layer-l2 { background: var(--orange); }
+        .layer-l3 { background: var(--red); }
+        .layer-l4 { background: #6366f1; }
+
+        /* Flow Diagram */
+        .flow-container {
+            background: var(--card-bg); border-radius: 10px;
+            padding: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+        .flow-step {
+            display: inline-block; text-align: center; vertical-align: middle;
+        }
+        .flow-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid var(--primary); border-radius: 10px;
+            padding: 12px 18px; min-width: 120px; font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .flow-arrow { font-size: 1.5em; color: var(--text-light); margin: 0 6px; }
+        
+        /* Skill Cards Grid */
+        .skills-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .skill-card {
+            background: var(--card-bg); border-radius: 10px;
+            padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary); transition: transform 0.15s;
+        }
+        .skill-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .skill-card .skill-id { font-family: 'Courier New', monospace; font-size: 0.85em; color: var(--primary); font-weight: 600; }
+        .skill-card .skill-name { font-size: 1.05em; font-weight: 600; margin: 4px 0; }
+        .skill-card .skill-layer { font-size: 0.8em; color: var(--text-light); }
+
+        /* Platform Cards */
+        .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .platform-card {
+            background: var(--card-bg); border-radius: 10px; padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-align: center;
+        }
+        .platform-card .p-icon { font-size: 2em; margin-bottom: 8px; }
+        .platform-card .p-name { font-weight: 700; font-size: 1.1em; }
+        .platform-card .p-desc { font-size: 0.85em; color: var(--text-light); margin-top: 6px; }
+        .platform-card .p-stats { font-size: 0.8em; color: var(--green); margin-top: 8px; font-weight: 600; }
+
+        /* File Tree */
+        .file-tree {
+            background: #1e293b; color: #e2e8f0; border-radius: 10px;
+            padding: 20px; font-family: 'Courier New', monospace; font-size: 0.88em;
+            overflow-x: auto; line-height: 1.5;
+        }
+        .file-tree .dir { color: #60a5fa; }
+        .file-tree .file { color: #a5b4fc; }
+        .file-tree .comment { color: #64748b; }
+
+        /* Quick Start */
+        .quick-start {
+            background: var(--card-bg); border-radius: 10px;
+            padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .quick-start ol { padding-left: 20px; }
+        .quick-start li { margin-bottom: 10px; }
+        .quick-start code {
+            background: #f1f5f9; padding: 2px 8px; border-radius: 4px;
+            font-family: 'Courier New', monospace; font-size: 0.9em; color: var(--primary-dark);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+            margin: 30px 0;
+        }
+        .stat-item {
+            background: var(--card-bg); border-radius: 10px; padding: 16px 28px;
+            text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            min-width: 130px;
+        }
+        .stat-item .stat-num { font-size: 2em; font-weight: 800; color: var(--primary); }
+        .stat-item .stat-label { font-size: 0.85em; color: var(--text-light); margin-top: 4px; }
+
+        footer {
+            text-align: center; padding: 30px 20px; color: var(--text-light);
+            font-size: 0.85em; border-top: 1px solid var(--border);
+        }
+        footer a { color: var(--primary); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="version">v1.0.0</div>
+    <h1>全域专家团构建 Skills</h1>
+    <p>一套统一的 AI 专家团构建套系 —— 支持根据用户需求动态构建任意领域专家团，涵盖角色定义、协作流程与交付标准。用户只需触发一次，系统自动完成 8 阶段全流程。</p>
+    <div class="badges">
+        <span class="badge">🎯 40 Skills</span>
+        <span class="badge">🏗️ 6 层架构</span>
+        <span class="badge">🔄 S1→S8 全自动</span>
+        <span class="badge">📦 4 平台支持</span>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item"><div class="stat-num">40</div><div class="stat-label">Skills 总数</div></div>
+        <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">架构层级</div></div>
+        <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">流程阶段</div></div>
+        <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">支持平台</div></div>
+        <div class="stat-item"><div class="stat-num">543</div><div class="stat-label">文件总数</div></div>
+    </div>
+
+    <!-- Quick Start -->
+    <div class="section">
+        <h2><span class="icon">🚀</span> 快速开始</h2>
+        <div class="quick-start">
+            <ol>
+                <li>克隆仓库: <code>git clone https://github.com/gjzou2023/expert-team-construction-skills-v1.git</code></li>
+                <li>选择目标平台（Claude Code / Codex CLI / Hermes / WorkBuddy），将 <code>dist-v2/{platform}/</code> 下文件复制到对应目录</li>
+                <li>触发 <code>team-orchestrator</code> skill，输入你的需求（如"帮我建一个数据分析专家团"）</li>
+                <li>系统自动执行 S1→S8 全流程，按提示确认即可</li>
+                <li>运行 <code>python import_validate.py</code> 校验完整性</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="section">
+        <h2><span class="icon">🏗️</span> 六层架构</h2>
+        <table class="arch-table">
+            <thead><tr><th>层级</th><th>使命</th><th>Skill 数</th><th>示例</th></tr></thead>
+            <tbody>
+                <tr><td><span class="layer-badge layer-meta">L-Meta</span></td><td>统一入口、自动编排</td><td>1</td><td><code>team-orchestrator</code></td></tr>
+                <tr><td><span class="layer-badge layer-l0">L0</span></td><td>推理基础设施</td><td>6</td><td><code>core-mental-model-engine</code></td></tr>
+                <tr><td><span class="layer-badge layer-l1">L1</span></td><td>八阶段执行链</td><td>8</td><td><code>pipeline-s1-need-diving</code></td></tr>
+                <tr><td><span class="layer-badge layer-l2">L2</span></td><td>保障机制</td><td>11</td><td><code>protocol-quality-gate</code></td></tr>
+                <tr><td><span class="layer-badge layer-l3">L3</span></td><td>平台适配</td><td>9</td><td><code>platform-hermes-adapter</code></td></tr>
+                <tr><td><span class="layer-badge layer-l4">L4</span></td><td>全局约束</td><td>5</td><td><code>constraint-mandatory-rules</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Flow -->
+    <div class="section">
+        <h2><span class="icon">🔄</span> S1→S8 执行流程</h2>
+        <div class="flow-container">
+            <div class="flow-step"><div class="flow-box">S1<br>需求深潜</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S2<br>领域消歧</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S3<br>链路拆解</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S4<br>交付物锚定</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S5<br>架构设计</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S6<br>工具链匹配</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S7<br>专家包生成</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-box">S8<br>平台执行</div></div>
+        </div>
+    </div>
+
+    <!-- Platforms -->
+    <div class="section">
+        <h2><span class="icon">📦</span> 支持平台</h2>
+        <div class="platforms">
+            <div class="platform-card">
+                <div class="p-icon">🤖</div>
+                <div class="p-name">Claude Code</div>
+                <div class="p-desc">40 独立 .md + Task 工具串行子agent</div>
+                <div class="p-stats">40/40 ✅</div>
+            </div>
+            <div class="platform-card">
+                <div class="p-icon">💻</div>
+                <div class="p-name">Codex CLI</div>
+                <div class="p-desc">40 角色配置 + spawn_agent 编排</div>
+                <div class="p-stats">40/40 ✅</div>
+            </div>
+            <div class="platform-card">
+                <div class="p-icon">🏛️</div>
+                <div class="p-name">Hermes Agent</div>
+                <div class="p-desc">40 独立 skill + L0-L4 核心规则内联</div>
+                <div class="p-stats">40/40 ✅</div>
+            </div>
+            <div class="platform-card">
+                <div class="p-icon">💼</div>
+                <div class="p-name">WorkBuddy</div>
+                <div class="p-desc">阶段式加载，骨架 ~15K tokens</div>
+                <div class="p-stats">40/40 ✅</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills List -->
+    <div class="section">
+        <h2><span class="icon">🧩</span> Skills 完整列表</h2>
+        <div class="skills-grid">
+            <div class="skill-card"><div class="skill-id">team-orchestrator</div><div class="skill-name">总编排器</div><div class="skill-layer">L-Meta · 唯一入口</div></div>
+            <div class="skill-card"><div class="skill-id">core-mental-model-engine</div><div class="skill-name">思维框架引擎</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">core-deliverable-backward-engine</div><div class="skill-name">交付物倒推引擎</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">core-domain-classifier</div><div class="skill-name">领域分类器</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">core-complexity-channel-selector</div><div class="skill-name">复杂度通道选择器</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">core-state-management-engine</div><div class="skill-name">状态管理引擎</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">core-symbol-system</div><div class="skill-name">符号系统</div><div class="skill-layer">L0 · 核心引擎</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s1-need-diving</div><div class="skill-name">S1 需求深潜</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s2-domain-disambiguation</div><div class="skill-name">S2 领域消歧</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s3-chain-decomposition</div><div class="skill-name">S3 链路拆解</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s4-deliverable-anchoring</div><div class="skill-name">S4 交付物锚定</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s5-architecture-design</div><div class="skill-name">S5 架构设计</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s6-toolchain-matching</div><div class="skill-name">S6 工具链匹配</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s7-expert-package-generation</div><div class="skill-name">S7 专家包生成</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">pipeline-s8-platform-execution</div><div class="skill-name">S8 平台执行</div><div class="skill-layer">L1 · 流程</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-quality-gate</div><div class="skill-name">质量守门</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-compliance-engine</div><div class="skill-name">合规协议</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-data-security</div><div class="skill-name">数据安全</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-error-handling</div><div class="skill-name">异常处理</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-feedback-loop</div><div class="skill-name">反馈闭环</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-human-approval</div><div class="skill-name">人机审批</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-knowledge-persistence</div><div class="skill-name">知识沉淀</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-automation-trigger</div><div class="skill-name">自动化触发</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-single-question-guidance</div><div class="skill-name">单问引导</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-confirmation-node</div><div class="skill-name">确认节点</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">protocol-early-termination</div><div class="skill-name">紧急终止</div><div class="skill-layer">L2 · 协议</div></div>
+            <div class="skill-card"><div class="skill-id">platform-workbuddy-adapter</div><div class="skill-name">WorkBuddy 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-codex-adapter</div><div class="skill-name">Codex CLI 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-hermes-adapter</div><div class="skill-name">Hermes 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-feishu-adapter</div><div class="skill-name">飞书适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-n8n-adapter</div><div class="skill-name">n8n 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-comfyui-adapter</div><div class="skill-name">ComfyUI 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-coze-adapter</div><div class="skill-name">Coze 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-dify-adapter</div><div class="skill-name">Dify 适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">platform-universal-adapter</div><div class="skill-name">通用适配器</div><div class="skill-layer">L3 · 适配器</div></div>
+            <div class="skill-card"><div class="skill-id">constraint-mandatory-rules</div><div class="skill-name">强制规则</div><div class="skill-layer">L4 · 约束</div></div>
+            <div class="skill-card"><div class="skill-id">constraint-flexible-rules</div><div class="skill-name">灵活规则</div><div class="skill-layer">L4 · 约束</div></div>
+            <div class="skill-card"><div class="skill-id">constraint-output-format</div><div class="skill-name">输出格式</div><div class="skill-layer">L4 · 约束</div></div>
+            <div class="skill-card"><div class="skill-id">constraint-tool-integration</div><div class="skill-name">工具集成</div><div class="skill-layer">L4 · 约束</div></div>
+            <div class="skill-card"><div class="skill-id">constraint-naming-convention</div><div class="skill-name">命名规范</div><div class="skill-layer">L4 · 约束</div></div>
+        </div>
+    </div>
+
+    <!-- File Structure -->
+    <div class="section">
+        <h2><span class="icon">📂</span> 文件结构</h2>
+        <div class="file-tree">
+<span class="comment">全域专家团构建_Skills_v1.0.0/</span>
+├── <span class="file">README.md</span>                      <span class="comment"># 项目说明</span>
+├── <span class="file">build_dist.py</span>                   <span class="comment"># 四平台构建脚本</span>
+├── <span class="file">import_validate.py</span>             <span class="comment"># 导入校验脚本</span>
+├── <span class="file">manifest.json</span>                  <span class="comment"># 清单文件</span>
+├── <span class="file">dependency_list.json</span>           <span class="comment"># 依赖清单</span>
+├── <span class="file">compatibility_matrix.json</span>      <span class="comment"># 版本兼容矩阵</span>
+├── <span class="dir">skills/全域专家团/</span>               <span class="comment"># 源 Skills</span>
+│   ├── <span class="dir">knowledge/</span>                   <span class="comment"># 共享知识资产</span>
+│   ├── <span class="dir">team-orchestrator/</span>           <span class="comment"># L-Meta 编排器</span>
+│   ├── <span class="dir">core-*/</span>                      <span class="comment"># L0 核心引擎 (6个)</span>
+│   ├── <span class="dir">pipeline-s*/</span>                 <span class="comment"># L1 流程 (8个)</span>
+│   ├── <span class="dir">protocol-*/</span>                  <span class="comment"># L2 协议 (11个)</span>
+│   ├── <span class="dir">platform-*/</span>                  <span class="comment"># L3 适配器 (9个)</span>
+│   └── <span class="dir">constraint-*/</span>                <span class="comment"># L4 约束 (5个)</span>
+├── <span class="dir">dist-v2/</span>                        <span class="comment"># 四平台分发版本</span>
+│   ├── <span class="dir">claude-code/</span>                 <span class="comment"># Claude Code 分发</span>
+│   ├── <span class="dir">codex-cli/</span>                   <span class="comment"># Codex CLI 分发</span>
+│   ├── <span class="dir">hermes/</span>                      <span class="comment"># Hermes Agent 分发</span>
+│   └── <span class="dir">workbuddy/</span>                   <span class="comment"># WorkBuddy 分发</span>
+├── <span class="dir">docs/</span>                           <span class="comment"># GitHub Pages 文档</span>
+└── <span class="dir">archive/</span>                        <span class="comment"># 归档文件</span>
+        </div>
+    </div>
+
+    <!-- Build -->
+    <div class="section">
+        <h2><span class="icon">🔧</span> 构建与校验</h2>
+        <div class="quick-start">
+            <ol>
+                <li>修改 <code>skills/全域专家团/</code> 下的源 SKILL.md 文件</li>
+                <li>运行 <code>python build_dist.py</code> 重新构建四平台分发版本</li>
+                <li>运行 <code>python import_validate.py</code> 校验完整性</li>
+                <li>检查 <code>dist-v2/</code> 下各平台文件是否最新</li>
+            </ol>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <p>全域专家团构建 Skills v1.0.0 | 2026-06-19</p>
+    <p><a href="https://github.com/gjzou2023/expert-team-construction-skills-v1">GitHub 仓库</a> · <a href="https://github.com/gjzou2023">作者主页</a></p>
+</footer>
+
+</body>
+</html>

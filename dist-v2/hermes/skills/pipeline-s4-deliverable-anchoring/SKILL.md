@@ -1,21 +1,19 @@
 ---
 name: pipeline-s4-deliverable-anchoring
-description: I-2.6改进: 在S3链路骨架基础上，填充每个节点的具体交付物（格式/频率/质量标准/目标受众），分配优先级和第一责任人，标注分线需求。S4负责'交付物填充' Use when: 用户说"S4执行、交付物锚定、交付物填充、优先级分配、平台确认"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l1]
-    related_skills: []
-    requires_toolsets: []
+id: "pipeline-s4-deliverable-anchoring"
+layer: "L1"
+name_zh: "阶段四：交付物锚定"
+name_en: "Stage 4: Deliverable Anchoring"
+version: "1.1.0"
+description: I-2.6改进: 在S3链路骨架基础上，填充每个节点的具体交付物（格式/频率/质量标准/目标受众），分配优先级和第一责任人，标注分线需求。S4负责'交付物填充'，不独立定义链路依赖；链路骨架由S3完成。标准/strict通道下承接S3骨架节点，仅填充内容，消除重复推理。Q9平台选择强制确认。
+agent_created: true
+trigger_keywords: ["S4执行", "交付物锚定", "交付物填充", "优先级分配", "平台确认"]
+dependencies: ["core-mental-model-engine", "core-deliverable-backward-engine"]
 ---
 
-# 阶段四：交付物锚定
-
-> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s4-deliverable-anchoring` | **中文名**: 阶段四：交付物锚定 | **英文名**: Stage 4: Deliverable Anchoring
 # 阶段四：交付物锚定 (Stage 4: Deliverable Anchoring)
 
-> **层级**: L1 | **版本**: 1.0.0 | **ID**: `pipeline-s4-deliverable-anchoring`
+> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s4-deliverable-anchoring`
 > **编排关系**: 本skill由 `team-orchestrator` 自动加载执行，用户不应直接触发。承接 `pipeline-s3-chain-decomposition` 的输出，完成后自动衔接 `pipeline-s5-architecture-design`。
 
 ## 概述
@@ -265,6 +263,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://pipeline/stage-4-rules` — 阶段4执行规则
 - **[dynamic]** `file://pipeline/stage-4-state` — 阶段4运行时状态
 

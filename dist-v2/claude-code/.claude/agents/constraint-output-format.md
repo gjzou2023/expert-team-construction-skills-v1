@@ -1,12 +1,16 @@
 ---
 name: constraint-output-format
-description: 方案文档14必含章节。v1.3.0新增标准输出结构模板与输出溯源参考指引。Markdown格式，Mermaid数据流，JSON Schema，条件激活标注。 Use when: 用户说"constraint-output-format、输出格式约束、L4格式"等触发词。
-tools: Read, Write
+id: "constraint-output-format"
+layer: "L4"
+name_zh: "输出格式规范"
+name_en: "Output Format"
+version: "1.3.0"
+description: 方案文档14必含章节。v1.3.0新增标准输出结构模板与输出溯源参考指引。Markdown格式，Mermaid数据流，JSON Schema，条件激活标注。
+agent_created: true
+trigger_keywords: ["constraint-output-format", "输出格式约束", "L4格式"]
+dependencies: []
 ---
 
-# 输出格式规范
-
-> **层级**: L4 | **版本**: 1.3.0 | **ID**: `constraint-output-format` | **中文名**: 输出格式规范 | **英文名**: Output Format
 # 输出格式规范 (Output Format)
 
 > **层级**: L4 | **版本**: 1.3.0 | **ID**: `constraint-output-format`
@@ -18,7 +22,7 @@ tools: Read, Write
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：规则, 约束, 强制, 规范, 命名
+当检测到以下关键词或场景时自动激活：输出格式约束, L4格式, 14必含章节校验
 
 ## 输入规范 (input_schema)
 
@@ -184,6 +188,8 @@ tools: Read, Write
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://constraints/constraint-output-format` — 输出格式规范完整规则集
 
 ## 依赖关系

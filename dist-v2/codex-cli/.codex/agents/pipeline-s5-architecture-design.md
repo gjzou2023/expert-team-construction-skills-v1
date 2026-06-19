@@ -1,3 +1,15 @@
+---
+name: pipeline-s5-architecture-design
+id: "pipeline-s5-architecture-design"
+layer: "L1"
+name_zh: "阶段五：架构设计"
+name_en: "Stage 5: Architecture Design"
+version: "1.3.0"
+description: 从交付物倒推角色，MECE三问校验，设计SOP/数据流/反馈回路/冷启动策略，执行5.1-5.7自检。v1.3.0新增角色深度画像与结构化辩论机制。角色数≥4必须Team型。
+agent_created: true
+trigger_keywords: ["S5执行", "架构设计", "角色倒推", "SOP设计", "MECE校验"]
+dependencies: ["core-mental-model-engine", "core-deliverable-backward-engine", "protocol-quality-gate", "protocol-feedback-loop", "protocol-compliance-engine"]
+---
 
 # 阶段五：架构设计 (Stage 5: Architecture Design)
 
@@ -142,6 +154,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://pipeline/stage-5-rules` — 阶段5执行规则
 - **[dynamic]** `file://pipeline/stage-5-state` — 阶段5运行时状态
 
@@ -277,7 +291,7 @@ FUNCTION design_architecture(deliverables, workflow, platform, channel, domain_t
 FUNCTION execute_pipeline_s5_architecture_design(input):
     # ===== 阶段五：架构设计 - 入口校验 =====
     ASSERT input.s4_outputs EXISTS
-    ASSERT input.domain_type IN ["A", "B", "C", "D", "E", "F"]
+    ASSERT input.domain_type IN ["A", "B", "C", "D", "F"]  # E型已改为A-F组合标记
     ASSERT input.channel IN ["fast", "standard", "strict"]
     LOAD context_inheritance FROM s4
 
@@ -368,12 +382,19 @@ FUNCTION execute_pipeline_s5_architecture_design(input):
 
     # ===== 步骤6: 知识资产沉淀 =====
     knowledge_assets = []
-    IF domain_type IN ["A", "E"]:
+    # 混合型场景通过domain_profile.secondary_domains判断
+    has_secondary = input.domain_profile EXISTS AND LENGTH(input.domain_profile.secondary_domains) > 0
+    secondary_contains = {{"A":false, "B":false, "C":false, "D":false, "F":false}}
+    IF has_secondary:
+        FOR sd IN input.domain_profile.secondary_domains:
+            secondary_contains[sd] = true
+
+    IF domain_type == "A" OR (has_secondary AND secondary_contains["A"]):
         APPEND {"type": "内容模板库", "update_frequency": "月度"} TO knowledge_assets
         APPEND {"type": "爆款素材库", "update_frequency": "周度"} TO knowledge_assets
     IF domain_type IN ["B", "D"]:
         APPEND {"type": "案例知识库", "update_frequency": "项目结案时"} TO knowledge_assets
-    IF domain_type IN ["F", "E"]:
+    IF domain_type == "F" OR (has_secondary AND secondary_contains["F"]):
         APPEND {"type": "FAQ知识库", "update_frequency": "周度"} TO knowledge_assets
         APPEND {"type": "话术模板库", "update_frequency": "月度"} TO knowledge_assets
 

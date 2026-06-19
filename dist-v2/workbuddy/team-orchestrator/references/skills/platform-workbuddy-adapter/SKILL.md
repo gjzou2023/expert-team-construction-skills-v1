@@ -1,6 +1,6 @@
 ---
 name: platform-workbuddy-adapter
-description: 生成.workbuddy-plugin/plugin.json+agents/*.md+avatars+settings.json(Team型)。Agent I Use when: 用户说"platform-workbuddy-adapter、WorkBuddy适配器、L3-WB"等触发词。
+description: 生成.workbuddy-plugin/plugin.json+agents/*.md+avatars+settings.json(Team型) Use when: 用户说"platform-workbuddy-adapter、WorkBuddy适配器、L3-WB"等触发词。
 ---
 
 # WorkBuddy平台适配器
@@ -197,6 +197,8 @@ description: 生成.workbuddy-plugin/plugin.json+agents/*.md+avatars+settings.js
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-workbuddy-adapter/format-spec` — WorkBuddy平台适配器格式规范
 
 ## 依赖关系

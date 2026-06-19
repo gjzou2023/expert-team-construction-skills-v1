@@ -1,3 +1,15 @@
+---
+name: constraint-naming-convention
+id: "constraint-naming-convention"
+layer: "L4"
+name_zh: "命名规范(精确三分法)"
+name_en: "Naming Convention"
+version: "1.0.0"
+description: Agent ID: kebab-case;花名:2-3字正常人名风格(谐音巧思,不与profession重复);profession:禁止通用title。
+agent_created: true
+trigger_keywords: ["constraint-naming-convention", "命名规范约束", "L4命名"]
+dependencies: []
+---
 
 # 命名规范(精确三分法) (Naming Convention)
 
@@ -10,7 +22,7 @@ Agent ID: kebab-case;花名:2-3字正常人名风格(谐音巧思,不与professi
 
 ## 触发条件
 
-当检测到以下关键词或场景时自动激活：规则, 约束, 强制, 规范, 命名
+当检测到以下关键词或场景时自动激活：命名规范约束, L4命名, Agent ID规范校验
 
 ## 输入规范 (input_schema)
 
@@ -171,6 +183,8 @@ Agent ID: kebab-case;花名:2-3字正常人名风格(谐音巧思,不与professi
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://constraints/constraint-naming-convention` — 命名规范(精确三分法)完整规则集
 
 ## 依赖关系

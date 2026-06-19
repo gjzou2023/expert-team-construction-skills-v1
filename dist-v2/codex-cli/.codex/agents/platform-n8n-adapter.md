@@ -1,3 +1,15 @@
+---
+name: platform-n8n-adapter
+id: "platform-n8n-adapter"
+layer: "L3"
+name_zh: "n8n工作流引擎适配器"
+name_en: "n8n Adapter"
+version: "1.0.0"
+description: 双角色：调度器(定时触发+事件监听)/执行引擎(工作流模板执行)。D型深度集成。
+agent_created: true
+trigger_keywords: ["platform-n8n-adapter", "n8n适配器", "L3-n8n"]
+dependencies: ["pipeline-s7-expert-package-generation"]
+---
 
 # n8n工作流引擎适配器 (n8n Adapter)
 
@@ -191,6 +203,8 @@
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://platform/platform-n8n-adapter/format-spec` — n8n工作流引擎适配器格式规范
 
 ## 依赖关系

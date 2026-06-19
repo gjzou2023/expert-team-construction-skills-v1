@@ -1,12 +1,16 @@
 ---
 name: core-complexity-channel-selector
-description: 基于7维度统一评估确定执行通道(快速/标准/严格)和响应模式(标准/增强/深度)，输出通道确认卡。v1.4.0将两套独立评估体系整合为统一框架。用户可升级通道但 Use when: 用户说"core-complexity-channel-selector、复杂度通道选择器、L0通道"等触发词。
-tools: Read, Write
+id: "core-complexity-channel-selector"
+layer: "L0"
+name_zh: "复杂度通道选择器"
+name_en: "Complexity Channel Selector"
+version: "1.4.0"
+description: 基于7维度统一评估确定执行通道(快速/标准/严格)和响应模式(标准/增强/深度)，输出通道确认卡。v1.4.0将两套独立评估体系整合为统一框架。用户可升级通道但不可降级（除非明确声明理解风险）。
+agent_created: true
+trigger_keywords: ["core-complexity-channel-selector", "复杂度通道选择器", "L0通道"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-# 复杂度通道选择器
-
-> **层级**: L0 | **版本**: 1.4.0 | **ID**: `core-complexity-channel-selector` | **中文名**: 复杂度通道选择器 | **英文名**: Complexity Channel Selector
 # 复杂度通道选择器 (Complexity Channel Selector)
 
 > **层级**: L0 | **版本**: 1.4.0 | **ID**: `core-complexity-channel-selector`
@@ -183,6 +187,8 @@ FUNCTION ASSESS_UNIFIED(s1_outputs):
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://channel-rules/thresholds` — 三通道判定阈值与跳过规则
 - **[static]** `file://channel-rules/fast-track-simplifications` — 快速通道各阶段精简规则
 
@@ -196,10 +202,10 @@ FUNCTION ASSESS_UNIFIED(s1_outputs):
 FUNCTION execute_core_complexity_channel_selector(input):
     // ========== 输入校验与初始化 ==========
     ASSERT input.s1_outputs IS NOT EMPTY, "S1输出不可为空"
-    ASSERT input.s1_outputs.domain_type IN ["A","B","C","D","E","F"], "领域类型必须合法"
+    ASSERT input.s1_outputs.domain_type IN ["A","B","C","D","F"], "领域类型必须合法(E型已改为A-F组合标记)"
+    // 混合型场景通过domain_profile.secondary_domains判断，不再使用E型枚举
     LOAD context_inheritance FROM core-mental-model-engine
-    LOAD channel_thresholds FROM file://channel-rules/thresholds
-    LOAD fast_simplifications FROM file://channel-rules/fast-track-simplifications
+    // channel_thresholds和fast_simplifications已内联在本SKILL.md正文中
 
     // ========== 第1步：5维度评估 ==========
     dimensions = {
@@ -323,7 +329,7 @@ FUNCTION execute_core_complexity_channel_selector(input):
         stage_simplification: stage_simplification,
         confirmation_card: confirmation_card
     }
-    CALL protocol-quality-gate("final_check", output)
+    // 质量门控由编排器在阶段结束后统一调用（避免递归）
     RETURN output
 
 FUNCTION ASSESS_KNOWLEDGE_DEPTH(s1_outputs):
@@ -346,7 +352,9 @@ FUNCTION ASSESS_REGULATORY_INTENSITY(s1_outputs):
 
 FUNCTION ASSESS_ERROR_COST(s1_outputs):
     // 评估错误代价维度
-    IF s1_outputs.domain_type IN ["B","E"] AND s1_outputs.compliance_level == "heavy":
+    // 混合型场景（原E型）通过secondary_domains判断：含B型+强监管=错误代价高
+    is_mixed_with_b = s1_outputs.domain_profile EXISTS AND "B" IN s1_outputs.domain_profile.secondary_domains
+    IF (s1_outputs.domain_type == "B" OR is_mixed_with_b) AND s1_outputs.compliance_level == "heavy":
         RETURN "high"  // 服务交付+强监管=错误代价高
     ELIF s1_outputs.domain_type IN ["A","C"]:
         RETURN "low"

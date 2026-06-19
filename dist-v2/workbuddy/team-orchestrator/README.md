@@ -31,4 +31,4 @@
 
 **Token 优化**：团队-orchestrator 骨架仅 ~15K tokens（vs 原 mega-skill 180K），单轮 context 控制在 ~25K tokens。
 
-> 生成时间：2026-06-18T00:02:24.068487
+> 生成时间：2026-06-19T11:58:23.385700

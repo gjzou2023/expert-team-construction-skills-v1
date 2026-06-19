@@ -1,21 +1,19 @@
 ---
 name: pipeline-s8-platform-execution
-description: 平台注册/部署指导、验证测试(含合规测试词库+分级失效判定)、交付确认(含迭代路径说明)。 Use when: 用户说"S8执行、平台部署、验证测试、上线交付、迭代路径"等触发词。
-version: 1.1.0
-platforms: [macos, linux, windows]
-metadata:
-  hermes:
-    tags: [l1]
-    related_skills: []
-    requires_toolsets: []
+id: "pipeline-s8-platform-execution"
+layer: "L1"
+name_zh: "阶段八：平台执行"
+name_en: "Stage 8: Platform Execution"
+version: "1.1.0"
+description: 平台注册/部署指导、验证测试(含合规测试词库+分级失效判定)、交付确认(含迭代路径说明)。
+agent_created: true
+trigger_keywords: ["S8执行", "平台部署", "验证测试", "上线交付", "迭代路径"]
+dependencies: ["core-mental-model-engine"]
 ---
 
-# 阶段八：平台执行
-
-> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s8-platform-execution` | **中文名**: 阶段八：平台执行 | **英文名**: Stage 8: Platform Execution
 # 阶段八：平台执行 (Stage 8: Platform Execution)
 
-> **层级**: L1 | **版本**: 1.0.0 | **ID**: `pipeline-s8-platform-execution`
+> **层级**: L1 | **版本**: 1.1.0 | **ID**: `pipeline-s8-platform-execution`
 > **编排关系**: 本skill由 `team-orchestrator` 自动加载执行，用户不应直接触发。承接 `pipeline-s7-expert-package-generation` 的输出，完成后整个8阶段流程结束，交付最终专家包。
 
 ## 概述
@@ -227,6 +225,8 @@ metadata:
 
 ## 知识库挂载点 (knowledge_base_mount_points)
 
+
+> **⚠️ 挂载点说明**：以下 `file://` 路径为概念性挂载点（conceptual mount points），用于声明本 skill 的知识库依赖结构。它们不是物理文件路径，不需要实际加载文件。执行时请直接依据本 SKILL.md 正文中的规则定义和伪代码逻辑工作。
 - **[static]** `file://pipeline/stage-8-rules` — 阶段8执行规则
 - **[dynamic]** `file://pipeline/stage-8-state` — 阶段8运行时状态
 
